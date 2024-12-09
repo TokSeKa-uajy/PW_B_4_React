@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import UserLayout from "../layouts/UserLayout";
 import ProfilPage from "../pages/profilePage";
 import KelasPage from "../pages/KelasPage";
+import KelasAktifPage from "../pages/KelasAktifPage";
 
 const router = createBrowserRouter([
     {
@@ -40,10 +41,10 @@ const router = createBrowserRouter([
                 path: "/user/kelas",
                 element: <KelasPage />,
             },
-            // {
-            //     path: "/user/watch-later",
-            //     element: <WatchListPage />,
-            // },
+            {
+                path: "/user/kelas-aktif",
+                element: <KelasAktifPage />,
+            },
         ],
     },
 ]);

@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Button, Row, Col, Container, Dropdown } from 'react-bootstrap';
+import { Image, Button, Row, Col, Container, Dropdown, Form } from 'react-bootstrap';
 import { data, useNavigate } from 'react-router-dom';
 import "./css/kelas.css";
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
-const KelasPage = () => {
+// TODO
+// Catatan API:
+/*
+1. Aku butuh API untuk ambil semua data kelas yang user pernah pesan dari model pemesanan kelas. 
+2. Aku butuh API untuk ambil semua pelatih untuk support nama pelatih di kelas
+3. api untuk pastikan siapa usernya
+*/
+const KelasAktifPage = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState([]);
     const [filteredClasses, setFilteredClasses] = useState([]);
@@ -11,6 +18,7 @@ const KelasPage = () => {
     const [categories, setCategories] = useState([]);
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [trainer, setTrainer] = useState("Kosong");
+    const [isActive, setIsActive] = useState(false);
 
     const [trainers, setTrainers] = useState([
         { id: 1, name: 'John Doe' },
@@ -18,12 +26,12 @@ const KelasPage = () => {
         { id: 3, name: 'Michael Johnson' },
         { id: 4, name: 'Emily Davis' },
     ]);
-    // TODO
-    // Catatan API:
-    // 1. Aku butuh API untuk mengambil data kelas dari server
-    // 2. Aku butuh API untuk mengambil data kategori dari kelas kategori (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke kategori)
-    // 3. Aku butuh API untuk mengambil data trainer dari kelas trainer (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke trainer)
-    // 4. API khusus untuk menghitung kelas yang sedang aktif. jadi, logikanya jika kelas aktif, maka kelas itu bakal berkurang 1 kapasitasnya per 1 user yang punya kelas itu aktif
+
+    // Function to handle checkbox change
+    const handleCheckboxChange = () => {
+        setIsActive(!isActive);
+    };
+
     // Simulated API function to fetch categories
     useEffect(() => {
         const fetchCategories = () => {
@@ -47,8 +55,31 @@ const KelasPage = () => {
                 { id: 6, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Rabu', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' }
             ];
 
-            setClasses(dummyClasses);
-            setFilteredClasses(dummyClasses); // Initial data for all classes
+            const dummy_pemesanan_kelas = [
+                { id_pemesanan_kelas: 1, id_pengguna: 1001, id_kelas: 1, id_paket_kelas: 1, tanggal_pemesanan: '2024-11-01', status_pembayaran: 'lunas', jenis_pembayaran: 'transfer bank', tanggal_mulai: '2025-11-10', tanggal_selesai: '2025-11-10' },
+                { id_pemesanan_kelas: 2, id_pengguna: 1001, id_kelas: 2, id_paket_kelas: 2, tanggal_pemesanan: '2024-11-02', status_pembayaran: 'belum lunas', jenis_pembayaran: 'e-wallet', tanggal_mulai: '2022-11-12', tanggal_selesai: '2022-11-12' },
+                { id_pemesanan_kelas: 3, id_pengguna: 1001, id_kelas: 3, id_paket_kelas: 1, tanggal_pemesanan: '2024-11-03', status_pembayaran: 'lunas', jenis_pembayaran: 'transfer bank', tanggal_mulai: '2024-11-15', tanggal_selesai: '2024-11-15' },
+                { id_pemesanan_kelas: 4, id_pengguna: 1001, id_kelas: 4, id_paket_kelas: 3, tanggal_pemesanan: '2024-11-04', status_pembayaran: 'lunas', jenis_pembayaran: 'kartu kredit', tanggal_mulai: '2024-11-17', tanggal_selesai: '2024-11-17' },
+                // { id_pemesanan_kelas: 4, id_pengguna: 1001, id_kelas: 3, id_paket_kelas: 3, tanggal_pemesanan: '2024-11-04', status_pembayaran: 'lunas', jenis_pembayaran: 'kartu kredit', tanggal_mulai: '2024-11-17', tanggal_selesai: '2024-11-17' }
+            ];
+
+            // Fungsi untuk menggabungkan data kelas dan pemesanan kelas
+            const mergeClassesAndOrders = (classes, orders) => {
+                return orders.map(order => {
+                    // Cari kelas berdasarkan id_kelas
+                    const kelas = classes.find(o => o.id === order.id_kelas);
+
+                    // Gabungkan data kelas dan pemesanan
+                    return kelas ? { ...order, ...kelas } : order; // Jika ada order, gabungkan data, jika tidak, kembalikan hanya kelas
+                });
+            };
+
+            // Gabungkan kelas dengan data pemesanan
+            const mergedClasses = mergeClassesAndOrders(dummyClasses, dummy_pemesanan_kelas);
+
+            setClasses(mergedClasses);
+            setFilteredClasses(mergedClasses); // Initial data for all classes
+            console.log(mergedClasses);
         };
 
         fetchClasses();
@@ -57,6 +88,17 @@ const KelasPage = () => {
     // Fungsi untuk mencari pelatih berdasarkan ID
     const mencariPelatih = (kelas) => {
         return trainers.find(t => t.id === kelas.id_pelatih);
+    };
+
+    // Function to get today's date in YYYY-MM-DD format
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+    };
+
+    const filterActiveClasses = (classes) => {
+        const today = getTodayDate();
+        return classes.filter(c => c.tanggal_selesai >= today);
     };
 
     // Handle category change
@@ -74,9 +116,16 @@ const KelasPage = () => {
             filtered = filtered.filter(c => c.hari === selectedDay);
         }
 
+        // Filter by isActive checkbox
+        if (isActive) {
+            setFilteredClasses(filterActiveClasses(filtered));
+        } else {
+            setFilteredClasses(filtered); // Show all classes when not filtered
+        }
+
         // Set filtered classes ke state
         setFilteredClasses(filtered);
-    }, [selectedCategory, selectedDay, classes]);
+    }, [selectedCategory, selectedDay, isActive, classes]);
 
 
 
@@ -91,6 +140,16 @@ const KelasPage = () => {
             <Container className="text-white ">
                 {/* Dropdown untuk filter berdasarkan kategori */}
                 <Row className="mt-2 d-flex justify-content-end">
+                    <Col xs="auto" className="me-3 mt-1">
+                        {/* Checkbox for toggling isActive */}
+                        <Form.Check
+                            type="checkbox"
+                            id="is-active-checkbox"
+                            label={`Tampilkan Hanya Kelas Aktif`}
+                            checked={isActive}
+                            onChange={handleCheckboxChange}
+                        />
+                    </Col>
                     <Col xs="auto" className="me-3">
                         <Dropdown>
                             <Dropdown.Toggle variant="primary" id="dropdown-basic">
@@ -130,7 +189,7 @@ const KelasPage = () => {
                     </Col>
                 </Row>
 
-                <h2 className="mb-4">Kelas yang Tersedia</h2>
+                <h2 className="mb-4">Kelas Saya</h2>
                 <Row>
                     {filteredClasses.map((kelas) => {
                         const trainer = mencariPelatih(kelas);
@@ -157,13 +216,13 @@ const KelasPage = () => {
                                         <p className="mb-1"><strong>Jam Mulai:</strong> {kelas.jam_mulai}</p>
                                         <p className="mb-1"><strong>Durasi:</strong> {kelas.durasi}</p>
                                         <p className="mb-1"><strong>Pelatih:</strong> {trainer ? trainer.name : 'Unknown'}</p>
-                                        <p className="mb-1"><strong>Tersedia:</strong> {kelas.kapasitas_kelas} peserta</p>
+                                        <p className="mb-1"><strong>Kelas Berakhir:</strong> {kelas.kapasitas_kelas} peserta</p>
                                     </div>
                                     <Button
                                         variant="primary"
                                         onClick={() => navigate(`/kelas/${kelas.id}`)}
                                     >
-                                        Detail
+                                        Status
                                     </Button>
                                 </div>
                             </Col>
@@ -176,4 +235,4 @@ const KelasPage = () => {
     );
 };
 
-export default KelasPage;
+export default KelasAktifPage;

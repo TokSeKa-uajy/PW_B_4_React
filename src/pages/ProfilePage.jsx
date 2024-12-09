@@ -40,7 +40,7 @@ const ProfilPage = () => {
 
     const routes = [
         {
-            path: "/user/KelasAktif",
+            path: "/user/kelas-aktif",
             name: "Kelas Aktif",
         },
         {
