@@ -1,0 +1,25 @@
+.kelas-item {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.kelas-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.kelas-image {
+    object-fit: cover;
+    width: 80px;
+    /* Skala gambar */
+    height: 80px;
+    /* Ukuran gambar tetap konsisten */
+}
+
+.scrollable-dropdown {
+    max-height: 200px;
+    /* Set max height of the dropdown */
+    overflow-y: auto;
+    /* Enable vertical scroll if items exceed max-height */
+}

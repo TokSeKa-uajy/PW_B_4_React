@@ -1,0 +1,16 @@
+.kelas-detail-container {
+    padding: 20px;
+}
+
+.kelas-detail-image {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.kelas-detail-description {
+    margin-top: 20px;
+}
+
+button {
+    margin-top: 20px;
+}
