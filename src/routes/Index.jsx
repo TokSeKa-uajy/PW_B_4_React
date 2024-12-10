@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import UserLayout from "../layouts/UserLayout";
 import ProfilPage from "../pages/profilePage";
 import KelasPage from "../pages/KelasPage";
+import HomePage from "../pages/HomePage";
 
 const router = createBrowserRouter([
     {
@@ -34,16 +35,16 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/user",
+                element: <HomePage />,
+            },
+            {
+                path: "/user/profil",
                 element: <ProfilPage />,
             },
             {
                 path: "/user/kelas",
                 element: <KelasPage />,
             },
-            // {
-            //     path: "/user/watch-later",
-            //     element: <WatchListPage />,
-            // },
         ],
     },
 ]);

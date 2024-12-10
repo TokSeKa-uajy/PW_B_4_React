@@ -30,7 +30,7 @@ const Login = () => {
             // const res = await SignIn(data);  // Replace SignIn with your actual login function
             // sessionStorage.setItem("token", res.access_token);
             // sessionStorage.setItem("user", JSON.stringify(res.user));
-            toast.success('Logged in successfully!');
+            // toast.success('Logged in successfully!');
             navigate("/user");
         } catch (err) {
             console.error(err);
