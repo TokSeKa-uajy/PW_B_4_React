@@ -53,10 +53,14 @@ const HomePage = () => {
           <Button className="member-btn">Coba Membership</Button>
         </main>
       </div>
-      <div className="container-carousel">
+      <div className="container-carousel1">
+      <div className='container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top'></div>
+        <h1 style={{marginRight: '85%'}}>KELAS</h1>
         {/* Carousel */}
         {filteredClasses.length > 0 && (
-        <Carousel style={{ width: '100%', margin: '0 auto', zIndex: '1' }}>
+        <Carousel style={{ width: '100%', 
+          margin: '0 auto', 
+          zIndex: '1'}}>
           {filteredClasses.map((group, index) => (
             <Carousel.Item key={index}>
               <Row
@@ -65,29 +69,31 @@ const HomePage = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginBottom: '50px',
-                  marginLeft: '8%',
+                  marginLeft: '10%',
+                  marginRight: '10%',
                   color: 'white',
+                  gap: '50px'
                 }}
               >
                 {group.map((dummyClass) => (
-                  <Col key={dummyClass.id} md={5} style={{}}>
+                  <Col key={dummyClass.id} md={5} style={{borderRadius: '20px', border: '2px solid white', boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.2)'}}>
                     <Row>
                       {/* Kolom Gambar */}
-                      <Col md={4}>
+                      <Row>
                         <Image
                           src={dummyClass.image}
                           alt={dummyClass.nama_kelas}
                           fluid
                           className="kelas-image"
                           style={{
-                            borderRadius: '8px',
-                            marginRight: '15px',
+                            marginTop: '50px',
+                            marginLeft: '20%',
                           }}
                         />
-                      </Col>
+                      </Row>
 
                       {/* Kolom Detail Data */}
-                      <Col md={8}>
+                      <Col md={8} style={{marginTop: '50px', marginBottom: '50px', marginLeft: '18%'}}>
                         <h3>{dummyClass.nama_kelas}</h3>
                         <p>
                           <strong>Jadwal:</strong> {dummyClass.hari}
@@ -113,6 +119,79 @@ const HomePage = () => {
           ))}
         </Carousel>
         )}
+        <div className='container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top'></div>
+      </div>
+      <div className="container-carousel2">
+      <div className='container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top'></div>
+        <h1 style={{marginRight: '80%'}}>FASILITAS</h1>
+        {/* Carousel */}
+        {filteredClasses.length > 0 && (
+        <Carousel style={{ width: '100%', 
+          margin: '0 auto', 
+          zIndex: '1',}}>
+          {filteredClasses.map((group, index) => (
+            <Carousel.Item key={index}>
+              <Row
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: '50px',
+                  marginLeft: '10%',
+                  marginRight: '10%',
+                  color: 'white',
+                  gap: '50px'
+                }}
+              >
+                {group.map((dummyClass) => (
+                  <Col key={dummyClass.id} md={5} style={{borderRadius: '20px', border: '2px solid white', boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.2)'}}>
+                    <Row>
+                      {/* Kolom Gambar */}
+                      <Row>
+                        <Image
+                          src={dummyClass.image}
+                          alt={dummyClass.nama_kelas}
+                          fluid
+                          className="kelas-image"
+                          style={{
+                            marginTop: '50px',
+                            marginLeft: '20%',
+                          }}
+                        />
+                      </Row>
+
+                      {/* Kolom Detail Data */}
+                      <Col md={8} style={{marginTop: '50px', marginBottom: '50px', marginLeft: '18%'}}>
+                        <h3>{dummyClass.nama_kelas}</h3>
+                        <p>
+                          <strong>Jadwal:</strong> {dummyClass.hari}
+                        </p>
+                        <p>
+                          <strong>Jam Mulai:</strong> {dummyClass.jam_mulai}
+                        </p>
+                        <p>
+                          <strong>Kapasitas:</strong> {dummyClass.kapasitas_kelas}
+                        </p>
+                        <Button
+                          variant="primary"
+                          onClick={() => navigate(`/user/kelas`)}
+                        >
+                          Detail
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Col>
+                ))}
+              </Row>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+        )}
+        <footer className="container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div className="col-md-4 d-flex align-items-center">
+                <span style={{color: 'white'}}>© 2024 by Gym Atma</span>
+            </div>
+        </footer>
       </div>
     </Container>
   );
