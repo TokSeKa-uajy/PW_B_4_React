@@ -10,7 +10,7 @@ const SideNavbar = ({ routes, user }) => {
     const location = useLocation();
 
     const [data, setData] = useState({
-        namaDepan: "123",
+        namaDepan: "Lalaland",
     });
 
     const toggleSidebar = () => setShow(!show);
