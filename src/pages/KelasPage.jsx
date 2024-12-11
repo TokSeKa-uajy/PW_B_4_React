@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Button, Row, Col, Container, Dropdown } from 'react-bootstrap';
+import { Image, Button, Row, Col, Container, Dropdown, Form } from 'react-bootstrap';
 import { data, useNavigate } from 'react-router-dom';
 import "./css/kelas.css";
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
@@ -11,6 +11,8 @@ const KelasPage = () => {
     const [categories, setCategories] = useState([]);
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [trainer, setTrainer] = useState("Kosong");
+    // untuk search
+    const [searchQuery, setSearchQuery] = useState("");
 
     const [trainers, setTrainers] = useState([
         { id: 1, name: 'John Doe' },
@@ -74,11 +76,16 @@ const KelasPage = () => {
             filtered = filtered.filter(c => c.hari === selectedDay);
         }
 
+        // Filter berdasarkan pencarian
+        if (searchQuery) {
+            filtered = filtered.filter(cls =>
+                cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
         // Set filtered classes ke state
         setFilteredClasses(filtered);
-    }, [selectedCategory, selectedDay, classes]);
-
-
+    }, [selectedCategory, selectedDay, searchQuery, classes]);
 
     return (
         <div style={{
@@ -127,6 +134,18 @@ const KelasPage = () => {
                                 ))}
                             </Dropdown.Menu>
                         </Dropdown>
+                    </Col>
+
+                    {/* Input Pencarian */}
+                    <Col xs="auto" className="ms-3">
+                        <Form.Group>
+                            <Form.Control
+                                type="text"
+                                placeholder="Cari Kelas..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </Form.Group>
                     </Col>
                 </Row>
 

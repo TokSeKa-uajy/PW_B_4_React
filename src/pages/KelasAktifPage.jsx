@@ -19,6 +19,8 @@ const KelasAktifPage = () => {
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [trainer, setTrainer] = useState("Kosong");
     const [isActive, setIsActive] = useState(false);
+    // untuk search
+    const [searchQuery, setSearchQuery] = useState("");
 
     const [trainers, setTrainers] = useState([
         { id: 1, name: 'John Doe' },
@@ -123,11 +125,16 @@ const KelasAktifPage = () => {
             setFilteredClasses(filtered); // Show all classes when not filtered
         }
 
+        // Filter berdasarkan pencarian
+        if (searchQuery) {
+            filtered = filtered.filter(cls =>
+                cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
         // Set filtered classes ke state
         setFilteredClasses(filtered);
-    }, [selectedCategory, selectedDay, isActive, classes]);
-
-
+    }, [selectedCategory, selectedDay, isActive, classes, searchQuery]);
 
     return (
         <div style={{
@@ -186,6 +193,17 @@ const KelasAktifPage = () => {
                                 ))}
                             </Dropdown.Menu>
                         </Dropdown>
+                    </Col>
+                    {/* Input Pencarian */}
+                    <Col xs="auto" className="ms-3">
+                        <Form.Group>
+                            <Form.Control
+                                type="text"
+                                placeholder="Cari Kelas..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </Form.Group>
                     </Col>
                 </Row>
 
