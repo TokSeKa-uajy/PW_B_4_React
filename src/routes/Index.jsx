@@ -7,7 +7,7 @@ import UserLayout from "../layouts/UserLayout";
 import ProfilPage from "../pages/profilePage";
 import KelasPage from "../pages/KelasPage";
 import KelasAktifPage from "../pages/KelasAktifPage";
-
+import RiwayatKeanggotaanPage from "../pages/RiwayatKeanggotaanPage";
 const router = createBrowserRouter([
     {
         path: "*",
@@ -45,6 +45,10 @@ const router = createBrowserRouter([
                 path: "/user/kelas-aktif",
                 element: <KelasAktifPage />,
             },
+            {
+                path: "/user/RiwayatKeanggotaanPage",
+                element: <RiwayatKeanggotaanPage/>
+            }
         ],
     },
 ]);

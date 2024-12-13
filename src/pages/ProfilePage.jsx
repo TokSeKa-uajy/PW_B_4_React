@@ -44,9 +44,9 @@ const ProfilPage = () => {
             name: "Kelas Aktif",
         },
         {
-            path: "/user/UserKeanggotaan",
+            path: "/user/RiwayatKeanggotaanPage",
             name: "Keanggotaan Saya",
-        }
+        },
     ];
 
     const navigate = useNavigate(); // React Router's hook for navigation

@@ -1,0 +1,96 @@
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Container, Table } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+// Simulasi API dengan data dummy
+const RiwayatKeanggotaanPage = () => {
+    const navigate = useNavigate();
+
+    // Data dummy untuk riwayat pembayaran
+    const [riwayatPembayaran, setRiwayatPembayaran] = useState([]);
+    const [paketKeanggotaan, setPaketKeanggotaan] = useState([]);
+
+    // Simulasi data riwayat pembayaran
+    const dataRiwayat = [
+        {
+            id_registrasi: 1,
+            id_pengguna: 101,
+            id_paket: 1, // ID Paket yang sesuai dengan paket
+            tanggal_pembayaran: '2024-10-01',
+            total_pembayaran: 100.00,
+            status_pembayaran: 'paid',
+            jenis_pembayaran: 'Kartu Kredit',
+        },
+        {
+            id_registrasi: 2,
+            id_pengguna: 102,
+            id_paket: 2,
+            tanggal_pembayaran: '2024-09-15',
+            total_pembayaran: 150.00,
+            status_pembayaran: 'pending',
+            jenis_pembayaran: 'E Wallet',
+        },
+        {
+            id_registrasi: 3,
+            id_pengguna: 103,
+            id_paket: 3,
+            tanggal_pembayaran: '2024-08-10',
+            total_pembayaran: 200.00,
+            status_pembayaran: 'failed',
+            jenis_pembayaran: 'Kartu Debit',
+        },
+    ];
+
+    // Simulasi data paket keanggotaan
+    const dataPaket = [
+        { id_paket: 1, durasi: '1_month', harga: 100.00 },
+        { id_paket: 2, durasi: '6_months', harga: 150.00 },
+        { id_paket: 3, durasi: '1_year', harga: 200.00 },
+    ];
+
+    // Menggunakan useEffect untuk mensimulasikan pemanggilan API dan mengatur state
+    useEffect(() => {
+        // Simulasi fetch data riwayat pembayaran dan paket keanggotaan
+        setRiwayatPembayaran(dataRiwayat);
+        setPaketKeanggotaan(dataPaket);
+    }, []);
+
+    // Fungsi untuk mendapatkan nama paket berdasarkan ID paket
+    const getPaketById = (id) => {
+        const paket = paketKeanggotaan.find(p => p.id_paket === id);
+        return paket ? paket.durasi : 'Tidak diketahui';
+    };
+
+    return (
+        <Container className="mt-4">
+            <Row>
+                <Col>
+                    <h3>Riwayat Pembayaran Keanggotaan</h3>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Tanggal Pembayaran</th>
+                                <th>Total Pembayaran</th>
+                                <th>Status Pembayaran</th>
+                                <th>Jenis Pembayaran</th>
+                                <th>Jenis Paket</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {riwayatPembayaran.map((item) => (
+                                <tr key={item.id_registrasi}>
+                                    <td>{item.tanggal_pembayaran}</td>
+                                    <td>{item.total_pembayaran.toFixed(2)}</td>
+                                    <td>{item.status_pembayaran}</td>
+                                    <td>{item.jenis_pembayaran}</td>
+                                    <td>{getPaketById(item.id_paket)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>
+        </Container>
+    );
+};
+
+export default RiwayatKeanggotaanPage;
