@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Offcanvas, Button, Nav, Image, Dropdown } from "react-bootstrap";
 import imgAH from "../assets/images/logoGym.png";
-import profileImg from "../assets/images/photoProfileDummy.jpeg"; // Gambar profil
+import profileImg from "../assets/images/photoProfileDummy.jpeg";
+
+import { Logout } from "../api/apiAuth";
+import { toast } from "react-toastify";
 
 const SideNavbar = ({ routes, user }) => {
     const [show, setShow] = useState(false);
@@ -15,8 +18,15 @@ const SideNavbar = ({ routes, user }) => {
 
     const toggleSidebar = () => setShow(!show);
 
-    const logout = () => {
-        navigate("/");
+    const handleLogout = async () => {
+        try {
+            await Logout();
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            navigate("/");
+        } catch (error) {
+            toast.error(error || "Failed to logout. Please try again.");
+        }
     };
 
     const goToProfile = () => {
@@ -111,7 +121,7 @@ const SideNavbar = ({ routes, user }) => {
                             Membership
                         </Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={logout} className="text-danger">
+                        <Dropdown.Item onClick={handleLogout} className="text-danger">
                             Logout
                         </Dropdown.Item>
                     </Dropdown.Menu>

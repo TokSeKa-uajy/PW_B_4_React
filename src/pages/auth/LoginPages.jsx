@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import InputFloatingForm from '../../components/auth/inputField';
+import { Login } from "../../api/apiAuth";
 import { toast } from 'react-toastify';
 import './authStyle.css';
 import authVideo from '../../assets/backgroundVideo/authVideo.mp4';
 
-// TODO
-// 1. Aku butuh API khusus untuk Register
-// 2. Aku butuh API khusus untuk Login
-// 3. Aku butuh API khusus untuk Logout
-
-const Login = () => {
+const LoginPage = () => {
     const navigate = useNavigate();
     const [data, setData] = useState({ email: "", password: "" });
     const [isDisabled, setIsDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -26,36 +23,25 @@ const Login = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         setLoading(true);
+        setError("");
         try {
-            // const res = await SignIn(data);  // Replace SignIn with your actual login function
-            // sessionStorage.setItem("token", res.access_token);
-            // sessionStorage.setItem("user", JSON.stringify(res.user));
-            toast.success('Logged in successfully!');
-            navigate("/user");
+            const response = await Login(data);
+
+            sessionStorage.setItem("token", response.token);
+            sessionStorage.setItem("user", JSON.stringify(response.user));
+
+            if (response.user.role === "admin") {
+                navigate("/admin/dashboard"); 
+            } else {
+                navigate("/user"); 
+            }
         } catch (err) {
-            console.error(err);
-            toast.error(err.message || "Failed to login");
+            setError(err.message || "Login failed. Please try again.");
+            toast.error(err.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
     };
-
-    // const Login = (event) => {
-    //     event.preventDefault();
-    //     setLoading(true);
-    //     SignIn(data)
-    //         .then((res) => {
-    //             navigate("/user");
-    //             sessionStorage.setItem("token", res.access_token);
-    //             sessionStorage.setItem("user", JSON.stringify(res.user));
-    //             toast.success(res.message);
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //             toast.dark(err.message);
-    //             setLoading(false);
-    //         });
-    // };
 
     return (
         <div className='video-background'>
@@ -90,15 +76,14 @@ const Login = () => {
                                 {loading ? 'Signing in...' : 'Sign in'}
                             </button>
                         </div>
-                        <p className='text-end mt-2'>
+                        <p className='text-center mt-2'>
                             Don't have an account? <Link to='/signup' className='ms-1'>Sign up</Link>
                         </p>
                     </form>
                 </div>
             </div>
         </div>
-
     );
 }
 
-export default Login;
+export default LoginPage;

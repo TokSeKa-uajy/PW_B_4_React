@@ -1,45 +1,48 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Register } from '../../api/apiAuth';
 import InputFloatingForm from '../../components/auth/inputField';
 import { toast } from 'react-toastify';
 import './authStyle.css';
 import authVideo from '../../assets/backgroundVideo/authVideo.mp4';  // Ensure the path matches where the video is stored
 
-// TODO
-// 1. Aku butuh API khusus untuk Register
-// 2. Aku butuh API khusus untuk Login
-// 3. Aku butuh API khusus untuk Logout
-
 function Signup() {
   const navigate = useNavigate();
   const [data, setData] = useState({
-    firstName: "",
-    lastName: "",
+    nama_depan: "",
+    nama_belakang: "",
     email: "",
     password: "",
+    password_confirmation: "",
+    nomor_telepon: "",
+    jenis_kelamin: "",
+    role: "user",
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const newData = { ...data, [name]: value.trim() };  // Trimming values for consistent data handling
+    const newData = { ...data, [name]: value.trim() };
     setData(newData);
-    setIsDisabled(!(newData.firstName && newData.lastName && newData.email && newData.password));
+    setIsDisabled(
+      !(newData.nama_depan && newData.nama_belakang && newData.email && newData.password && newData.password_confirmation && newData.nomor_telepon && newData.jenis_kelamin)
+    );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+
     try {
-      // const res = await Register(data); // Assume Register is a function you've defined to handle sign-up
-      // sessionStorage.setItem("token", res.access_token);  // Adjust based on your actual API
-      // sessionStorage.setItem("user", JSON.stringify(res.user));  // Adjust based on your actual API
-      toast.success('Registered successfully');
-      navigate("/user");  // Adjust redirect as necessary
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message || "An error occurred during registration");
+      const res = await Register(data);
+      toast.success("Registration successful! Please log in.");
+      navigate("/");
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(errorMessage);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -60,14 +63,14 @@ function Signup() {
             <InputFloatingForm
               label="Nama Depan"
               placeholder="Masukkan Nama Depan"
-              name="namaDepan"
+              name="nama_depan"
               type="text"
               onChange={handleChange}
             />
             <InputFloatingForm
               label="Nama Belakang"
               placeholder="Masukkan Nama Belakang"
-              name="namaBelakang"
+              name="nama_belakang"
               type="text"
               onChange={handleChange}
             />
@@ -86,18 +89,54 @@ function Signup() {
               onChange={handleChange}
             />
             <InputFloatingForm
+              label="Konfirmasi Password"
+              placeholder="Konfirmasi Password"
+              name="password_confirmation"
+              id="password_confirmation"
+              type="password"
+              onChange={handleChange}
+            />
+            <InputFloatingForm
               label="Telepon"
               placeholder="Masukkan Nomor Telepon"
               name="nomor_telepon"
               type="text"
               onChange={handleChange}
             />
+            <div className="text-center mt-4">
+              <div className="d-flex justify-content-center">
+                <div className="me-3">
+                  <input
+                    type="radio"
+                    name="jenis_kelamin"
+                    value="pria"
+                    id="pria"
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="pria" className="ms-2">
+                    Pria
+                  </label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    name="jenis_kelamin"
+                    value="perempuan"
+                    id="perempuan"
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="perempuan" className="ms-2">
+                    Perempuan
+                  </label>
+                </div>
+              </div>
+            </div>
             <div className='d-grid mt-4'>
               <button className='btn btn-primary' disabled={isDisabled || loading}>
                 {loading ? "Registering..." : "Sign Up"}
               </button>
             </div>
-            <p className='text-end mt-2'>
+            <p className='text-end mt-2 text-center'>
               Already Registered? <Link to='/' className='ms-2'>Sign in</Link>
             </p>
           </form>
