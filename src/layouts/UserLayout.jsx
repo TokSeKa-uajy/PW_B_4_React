@@ -22,7 +22,11 @@ const routes = [
     {
         path: "/user/AdminKategori",
         name: "AdminKategori",
-    }
+    },
+    {
+        path: "/user/AdminPelatihPage",
+        name: "AdminPelatihPage",
+    },
 ];
 const UserLayout = ({ children }) => {
     return (

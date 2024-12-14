@@ -11,6 +11,8 @@ import RiwayatKeanggotaanPage from "../pages/RiwayatKeanggotaanPage";
 import KeanggotaanPesan from "../pages/KeanggotaanPesan";
 import AdminKelasPage from "../pages/AdminKelasPage";
 import KategoriPage from "../pages/KategoriPage";
+import KelasDetailPage from "../pages/KelasDetailPage";
+import AdminPelatihPage from "../pages/AdminPelatihPage";
 const router = createBrowserRouter([
     {
         path: "*",
@@ -63,6 +65,14 @@ const router = createBrowserRouter([
             {
                 path: "/user/AdminKategori",
                 element: <KategoriPage/>
+            },
+            {
+                path: "/user/KelasDetail/:id",
+                element: <KelasDetailPage/>
+            },
+            {
+                path: "/user/AdminPelatihPage",
+                element: <AdminPelatihPage/>
             },
         ],
     },

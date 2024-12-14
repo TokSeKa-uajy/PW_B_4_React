@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Button, Row, Col, Container, Dropdown, Form } from 'react-bootstrap';
-import { data, useNavigate } from 'react-router-dom';
+import { Image, Button, Row, Col, Container, Dropdown, Form, Pagination } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import "./css/kelas.css";
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
+
 const KelasPage = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState([]);
@@ -10,34 +11,28 @@ const KelasPage = () => {
     const [selectedCategory, setSelectedCategory] = useState('Semua');
     const [categories, setCategories] = useState([]);
     const [selectedDay, setSelectedDay] = useState('Semua');
-    const [trainer, setTrainer] = useState("Kosong");
-    // untuk search
     const [searchQuery, setSearchQuery] = useState("");
+    const [trainers, setTrainers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(6); // Default to minimum of 6 items per page
 
-    const [trainers, setTrainers] = useState([
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' },
-        { id: 3, name: 'Michael Johnson' },
-        { id: 4, name: 'Emily Davis' },
-    ]);
-    // TODO
-    // Catatan API:
-    // 1. Aku butuh API untuk mengambil data kelas dari server
-    // 2. Aku butuh API untuk mengambil data kategori dari kelas kategori (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke kategori)
-    // 3. Aku butuh API untuk mengambil data trainer dari kelas trainer (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke trainer)
-    // 4. API khusus untuk menghitung kelas yang sedang aktif. jadi, logikanya jika kelas aktif, maka kelas itu bakal berkurang 1 kapasitasnya per 1 user yang punya kelas itu aktif
-    // Simulated API function to fetch categories
     useEffect(() => {
-        const fetchCategories = () => {
-            // Simulate fetching categories from an API
-            const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
+        const fetchCategoriesAndTrainers = () => {
+            const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
             setCategories(dummyCategories);
+
+            const dummyTrainers = [
+                { id: 1, name: 'John Doe' },
+                { id: 2, name: 'Jane Smith' },
+                { id: 3, name: 'Michael Johnson' },
+                { id: 4, name: 'Emily Davis' },
+            ];
+            setTrainers(dummyTrainers);
         };
 
-        fetchCategories();
+        fetchCategoriesAndTrainers();
     }, []);
 
-    // Simulated API function
     useEffect(() => {
         const fetchClasses = () => {
             const dummyClasses = [
@@ -50,42 +45,47 @@ const KelasPage = () => {
             ];
 
             setClasses(dummyClasses);
-            setFilteredClasses(dummyClasses); // Initial data for all classes
+            setFilteredClasses(dummyClasses);
         };
 
         fetchClasses();
     }, []);
 
-    // Fungsi untuk mencari pelatih berdasarkan ID
     const mencariPelatih = (kelas) => {
         return trainers.find(t => t.id === kelas.id_pelatih);
     };
 
-    // Handle category change
-    // Filter classes based on selected category
+    // Filtering and pagination logic
     useEffect(() => {
         let filtered = classes;
 
-        // Filter berdasarkan kategori
         if (selectedCategory !== 'Semua') {
             filtered = filtered.filter(c => c.category === selectedCategory);
         }
 
-        // Filter berdasarkan hari
         if (selectedDay !== 'Semua') {
             filtered = filtered.filter(c => c.hari === selectedDay);
         }
 
-        // Filter berdasarkan pencarian
         if (searchQuery) {
             filtered = filtered.filter(cls =>
                 cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
-        // Set filtered classes ke state
         setFilteredClasses(filtered);
     }, [selectedCategory, selectedDay, searchQuery, classes]);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentClasses = filteredClasses.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const handleItemsPerPageChange = (e) => {
+        setItemsPerPage(parseInt(e.target.value));
+        setCurrentPage(1); // Reset to the first page
+    };
 
     return (
         <div style={{
@@ -96,7 +96,6 @@ const KelasPage = () => {
             padding: '20px'
         }}>
             <Container className="text-white ">
-                {/* Dropdown untuk filter berdasarkan kategori */}
                 <Row className="mt-2 d-flex justify-content-end">
                     <Col xs="auto" className="me-3">
                         <Dropdown>
@@ -117,7 +116,6 @@ const KelasPage = () => {
                         </Dropdown>
                     </Col>
 
-                    {/* Dropdown untuk memilih hari */}
                     <Col xs="auto">
                         <Dropdown>
                             <Dropdown.Toggle variant="success" id="dropdown-day">
@@ -136,7 +134,6 @@ const KelasPage = () => {
                         </Dropdown>
                     </Col>
 
-                    {/* Input Pencarian */}
                     <Col xs="auto" className="ms-3">
                         <Form.Group>
                             <Form.Control
@@ -147,11 +144,24 @@ const KelasPage = () => {
                             />
                         </Form.Group>
                     </Col>
+
+                    <Col xs="auto" className="ms-3">
+                        <Form.Group>
+                            <Form.Select
+                                value={itemsPerPage}
+                                onChange={handleItemsPerPageChange}
+                            >
+                                <option value={6}>6 items per page</option>
+                                <option value={8}>8 items per page</option>
+                                <option value={12}>12 items per page</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
                 </Row>
 
                 <h2 className="mb-4">Kelas yang Tersedia</h2>
                 <Row>
-                    {filteredClasses.map((kelas) => {
+                    {currentClasses.map((kelas) => {
                         const trainer = mencariPelatih(kelas);
                         return (
                             <Col key={kelas.id} md={6} className="mb-4">
@@ -159,14 +169,14 @@ const KelasPage = () => {
                                     <Col xs={3} className="d-flex justify-content-center align-items-center">
                                         <Image
                                             src={kelas.image}
-                                            alt={kelas.name}
+                                            alt={kelas.nama_kelas}
                                             className="kelas-image"
                                             fluid
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
                                                 objectFit: 'cover',
-                                                borderRadius: '50%',
+                                                borderRadius: '10%',
                                             }}
                                         />
                                     </Col>
@@ -180,7 +190,7 @@ const KelasPage = () => {
                                     </div>
                                     <Button
                                         variant="primary"
-                                        onClick={() => navigate(`/kelas/${kelas.id}`)}
+                                        onClick={() => navigate(`/user/KelasDetail/${kelas.id}`)}
                                     >
                                         Detail
                                     </Button>
@@ -189,9 +199,20 @@ const KelasPage = () => {
                         )
                     })}
                 </Row>
+
+                <Pagination className="justify-content-center">
+                    {[...Array(Math.ceil(filteredClasses.length / itemsPerPage)).keys()].map((number) => (
+                        <Pagination.Item
+                            key={number + 1}
+                            active={number + 1 === currentPage}
+                            onClick={() => paginate(number + 1)}
+                        >
+                            {number + 1}
+                        </Pagination.Item>
+                    ))}
+                </Pagination>
             </Container>
         </div>
-
     );
 };
 

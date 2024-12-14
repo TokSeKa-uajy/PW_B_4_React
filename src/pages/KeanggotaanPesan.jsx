@@ -11,7 +11,7 @@ const KeanggotaanPesan = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isMember, setIsMember] = useState(false);
 
-    // Simulasi API untuk mengecek status keanggotaan cek di tabel keanggotaan
+    // Simulasi API untuk mengecek status keanggotaan cek di tabel
     const checkMembershipStatus = async () => {
         // Simulate API response
         const dummyResponse = { isMember: false }; // Ganti dengan false untuk tes

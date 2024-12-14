@@ -1,178 +1,217 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Button, Row, Col, Container, Dropdown } from 'react-bootstrap';
-import { data, useNavigate } from 'react-router-dom';
-import "./css/kelas.css";
-import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
-const KelasDetailPage = () => {
-    const navigate = useNavigate();
-    const [classes, setClasses] = useState([]);
-    const [filteredClasses, setFilteredClasses] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('Semua');
-    const [categories, setCategories] = useState([]);
-    const [selectedDay, setSelectedDay] = useState('Semua');
-    const [trainer, setTrainer] = useState("Kosong");
+import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
+import { useParams } from 'react-router-dom';
+import backgroundImage from "../assets/images/kelasBackground.jpg";
 
+const KelasDetailPage = () => {
+    const { id } = useParams(); // Ambil ID kelas dari parameter URL
+    const [kelasDetail, setKelasDetail] = useState(null);
+    const [isBooking, setIsBooking] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [paymentType, setPaymentType] = useState("Kartu Kredit");
+    const [selectedDuration, setSelectedDuration] = useState("1_month");
+    const [durasiHarga, setDurasiHarga] = useState({});
     const [trainers, setTrainers] = useState([
         { id: 1, name: 'John Doe' },
         { id: 2, name: 'Jane Smith' },
         { id: 3, name: 'Michael Johnson' },
         { id: 4, name: 'Emily Davis' },
     ]);
-    // TODO
-    // Catatan API:
-    // 1. Aku butuh API untuk mengambil data kelas dari server
-    // 2. Aku butuh API untuk mengambil data kategori dari kelas kategori (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke kategori)
-    // 3. Aku butuh API untuk mengambil data trainer dari kelas trainer (nanti perlu bikin fungsi yang memasangkannya dengan id dari kelas ke trainer)
 
-    // Simulated API function to fetch categories
+    // Simulasi fetch API untuk detail kelas berdasarkan ID
     useEffect(() => {
-        const fetchCategories = () => {
-            // Simulate fetching categories from an API
-            const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
-            setCategories(dummyCategories);
-        };
-
-        fetchCategories();
-    }, []);
-
-    // Simulated API function
-    useEffect(() => {
-        const fetchClasses = () => {
-            const dummyClasses = [
-                { id: 1, image: 'https://via.placeholder.com/150', nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga' },
-                { id: 2, image: 'https://via.placeholder.com/150', nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates' },
-                { id: 3, image: 'https://via.placeholder.com/150', nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT' },
-                { id: 4, image: 'https://via.placeholder.com/150', nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio' },
-                { id: 5, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' },
-                { id: 6, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Rabu', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' }
+        const fetchKelasDetail = async () => {
+            const dummyData = [
+                {
+                    id: 1,
+                    nama_kelas: "Yoga for Beginners",
+                    hari: "Senin",
+                    jam_mulai: "08:00",
+                    durasi: "60 mins",
+                    kapasitas_kelas: 20,
+                    deskripsi: "Kelas yoga untuk pemula untuk membantu fleksibilitas dan relaksasi.",
+                    id_pelatih: 1
+                },
+                {
+                    id: 2,
+                    nama_kelas: "Advanced Pilates",
+                    hari: "Rabu",
+                    jam_mulai: "10:00",
+                    durasi: "90 mins",
+                    kapasitas_kelas: 15,
+                    deskripsi: "Kelas pilates lanjutan untuk meningkatkan kekuatan inti.",
+                    id_pelatih: 2
+                },
+                {
+                    id: 3,
+                    nama_kelas: "HIIT Training",
+                    hari: "Senin",
+                    jam_mulai: "07:00",
+                    durasi: "45 mins",
+                    kapasitas_kelas: 30,
+                    deskripsi: "Latihan intensitas tinggi untuk membakar kalori secara maksimal.",
+                    id_pelatih: 3
+                },
             ];
 
-            setClasses(dummyClasses);
-            setFilteredClasses(dummyClasses); // Initial data for all classes
+            const kelas = dummyData.find((kelas) => kelas.id === parseInt(id));
+            if (kelas) {
+                const pelatih = trainers.find(trainer => trainer.id === kelas.id_pelatih);
+                setKelasDetail({ ...kelas, pelatih: pelatih ? pelatih.name : "Unknown" });
+            }
         };
 
-        fetchClasses();
-    }, []);
+        const fetchDurasiHarga = async () => {
+            // Simulasi API untuk mengambil data Paket_kelas
+            const dummyPaketKelas = [
+                { durasi: "1_month", harga: 200000 },
+                { durasi: "6_months", harga: 1000000 },
+                { durasi: "1_year", harga: 1500000 },
+            ];
 
-    // Fungsi untuk mencari pelatih berdasarkan ID
-    const mencariPelatih = (kelas) => {
-        return trainers.find(t => t.id === kelas.id_pelatih);
+            const hargaMap = {};
+            dummyPaketKelas.forEach(paket => {
+                hargaMap[paket.durasi] = paket.harga;
+            });
+            setDurasiHarga(hargaMap);
+        };
+
+        fetchKelasDetail();
+        fetchDurasiHarga();
+    }, [id, trainers]);
+
+    const handleShowModal = () => {
+        setShowModal(true);
     };
 
-    // Handle category change
-    // Filter classes based on selected category
-    useEffect(() => {
-        let filtered = classes;
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
-        // Filter berdasarkan kategori
-        if (selectedCategory !== 'Semua') {
-            filtered = filtered.filter(c => c.category === selectedCategory);
+    const handleBooking = async () => {
+        setIsBooking(true);
+        try {
+            // Simulasi API booking kelas
+            const payload = {
+                id_user: 123, // Contoh ID user
+                id_kelas: kelasDetail.id,
+                durasi: selectedDuration,
+                total_pembayaran: durasiHarga[selectedDuration],
+                jenis_pembayaran: paymentType,
+                tanggal_booking: new Date().toISOString().split("T")[0],
+                status: "booked",
+            };
+
+            alert("Kelas berhasil dipesan!", payload);
+            handleCloseModal();
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan saat memesan kelas.");
+        } finally {
+            setIsBooking(false);
         }
+    };
 
-        // Filter berdasarkan hari
-        if (selectedDay !== 'Semua') {
-            filtered = filtered.filter(c => c.hari === selectedDay);
-        }
-
-        // Set filtered classes ke state
-        setFilteredClasses(filtered);
-    }, [selectedCategory, selectedDay, classes]);
-
-
+    if (!kelasDetail) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div style={{
-            backgroundImage: `url(${kelasBackgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-            padding: '20px'
-        }}>
-            <Container className="text-white ">
-                {/* Dropdown untuk filter berdasarkan kategori */}
-                <Row className="mt-2 d-flex justify-content-end">
-                    <Col xs="auto" className="me-3">
-                        <Dropdown>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                                Filter berdasarkan kategori: {selectedCategory}
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu className="scrollable-dropdown">
-                                {categories.map((category, index) => (
-                                    <Dropdown.Item
-                                        key={index}
-                                        onClick={() => setSelectedCategory(category)}
-                                    >
-                                        {category}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Col>
-
-                    {/* Dropdown untuk memilih hari */}
-                    <Col xs="auto">
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-day">
-                                Filter berdasarkan Hari: {selectedDay}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {['Semua', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map((day, index) => (
-                                    <Dropdown.Item
-                                        key={index}
-                                        onClick={() => setSelectedDay(day)}
-                                    >
-                                        {day}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Col>
-                </Row>
-
-                <h2 className="mb-4">Kelas yang Tersedia</h2>
-                <Row>
-                    {filteredClasses.map((kelas) => {
-                        const trainer = mencariPelatih(kelas);
-                        return (
-                            <Col key={kelas.id} md={4} className="mb-4">
-                                <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-dark bg-opacity-25">
-                                    <Col xs={2} className="d-flex justify-content-center align-items-center">
-                                        <Image
-                                            src={kelas.image}
-                                            alt={kelas.name}
-                                            className="kelas-image"
-                                            fluid
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                                borderRadius: '50%',
-                                            }}
-                                        />
-                                    </Col>
-                                    <div className="flex-grow-1 ms-4">
-                                        <h5 className="mb-1">{kelas.nama_kelas}</h5>
-                                        <p className="mb-1"><strong>Hari:</strong> {kelas.hari}</p>
-                                        <p className="mb-1"><strong>Jam Mulai:</strong> {kelas.jam_mulai}</p>
-                                        <p className="mb-1"><strong>Durasi:</strong> {kelas.durasi}</p>
-                                        <p className="mb-1"><strong>Pelatih:</strong> {trainer ? trainer.name : 'Unknown'}</p>
-                                        <p className="mb-1"><strong>Tersedia:</strong> {kelas.kapasitas_kelas} peserta</p>
-                                    </div>
+        <div
+            style={{
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "20px",
+            }}
+        >
+            <Container className="text-center text-white">
+                <Row className="justify-content-center">
+                    <Col md={8}>
+                        <Card className="shadow-lg border-0" style={{ backgroundColor: "rgba(255, 255, 255, 0.9)", borderRadius: "15px" }}>
+                            <Card.Body>
+                                <Card.Title className="fw-bold display-6 text-primary">{kelasDetail.nama_kelas}</Card.Title>
+                                <Card.Text className="text-muted fs-5">
+                                    <strong>Hari:</strong> {kelasDetail.hari}
+                                    <br />
+                                    <strong>Jam Mulai:</strong> {kelasDetail.jam_mulai}
+                                    <br />
+                                    <strong>Durasi:</strong> {kelasDetail.durasi}
+                                    <br />
+                                    <strong>Kapasitas:</strong> {kelasDetail.kapasitas_kelas} orang
+                                    <br />
+                                    <strong>Pelatih:</strong> {kelasDetail.pelatih}
+                                    <br />
+                                    <strong>Deskripsi:</strong> {kelasDetail.deskripsi}
+                                </Card.Text>
+                                <div className="d-flex justify-content-center">
                                     <Button
                                         variant="primary"
-                                        onClick={() => navigate(`/kelas/${kelas.id}`)}
+                                        size="lg"
+                                        onClick={handleShowModal}
+                                        style={{ borderRadius: "30px" }}
                                     >
-                                        Detail
+                                        Pesan Kelas
                                     </Button>
                                 </div>
-                            </Col>
-                        )
-                    })}
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
             </Container>
-        </div>
 
+            {/* Modal untuk simulasi pembayaran */}
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Konfirmasi Pembayaran</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {kelasDetail && (
+                        <div>
+                            <p>
+                                Anda akan memesan kelas {kelasDetail.nama_kelas}.
+                            </p>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Pilih Durasi</Form.Label>
+                                <Form.Select
+                                    value={selectedDuration}
+                                    onChange={(e) => setSelectedDuration(e.target.value)}
+                                >
+                                    {Object.entries(durasiHarga).map(([durasi, harga]) => (
+                                        <option key={durasi} value={durasi}>
+                                            {durasi.replace("_", " ")} - Rp {harga.toLocaleString("id-ID")}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Pilih Jenis Pembayaran</Form.Label>
+                                <Form.Select
+                                    value={paymentType}
+                                    onChange={(e) => setPaymentType(e.target.value)}
+                                >
+                                    <option value="Kartu Kredit">Kartu Kredit</option>
+                                    <option value="Kartu Debit">Kartu Debit</option>
+                                    <option value="E Wallet">E Wallet</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Batal
+                    </Button>
+                    <Button variant="primary" onClick={handleBooking} disabled={isBooking}>
+                        {isBooking ? "Memproses..." : "Bayar Sekarang"}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
     );
 };
 

@@ -58,6 +58,12 @@ const AdminKelasPage = () => {
     fetchTrainers();
   }, []);
 
+  const [customPrices, setCustomPrices] = useState({
+    "1_month": 200000,
+    "6_months": 1000000,
+    "1_year": 1500000,
+  });
+
   useEffect(() => {
     let filtered = kelasList;
 
@@ -105,6 +111,14 @@ const AdminKelasPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  // Mengatur perubahan harga custom
+  const handlePriceChange = (durasi, value) => {
+    setCustomPrices(prevPrices => ({
+      ...prevPrices,
+      [durasi]: parseInt(value) || 0,
+    }));
   };
 
   const handleSubmit = async () => {
@@ -303,6 +317,20 @@ const AdminKelasPage = () => {
                     <option key={trainer.id} value={trainer.id}>{trainer.name}</option>
                   ))}
                 </Form.Select>
+              </Form.Group>
+              {/* Input untuk harga custom berdasarkan durasi */}
+              <Form.Group className="mb-3">
+                <Form.Label>Custom Harga untuk Durasi</Form.Label>
+                {Object.entries(customPrices).map(([durasi, harga]) => (
+                  <Form.Group key={durasi} className="mb-2">
+                    <Form.Label>{durasi.replace("_", " ")}</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={harga}
+                      onChange={(e) => handlePriceChange(durasi, e.target.value)}
+                    />
+                  </Form.Group>
+                ))}
               </Form.Group>
             </Form>
           )}
