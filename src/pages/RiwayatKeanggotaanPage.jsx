@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';;
 // Simulasi API dengan data dummy
 const RiwayatKeanggotaanPage = () => {
     const navigate = useNavigate();
@@ -61,35 +62,51 @@ const RiwayatKeanggotaanPage = () => {
     };
 
     return (
-        <Container className="mt-4">
-            <Row>
-                <Col>
-                    <h3>Riwayat Pembayaran Keanggotaan</h3>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Tanggal Pembayaran</th>
-                                <th>Total Pembayaran</th>
-                                <th>Status Pembayaran</th>
-                                <th>Jenis Pembayaran</th>
-                                <th>Jenis Paket</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {riwayatPembayaran.map((item) => (
-                                <tr key={item.id_registrasi}>
-                                    <td>{item.tanggal_pembayaran}</td>
-                                    <td>{item.total_pembayaran.toFixed(2)}</td>
-                                    <td>{item.status_pembayaran}</td>
-                                    <td>{item.jenis_pembayaran}</td>
-                                    <td>{getPaketById(item.id_paket)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
-        </Container>
+        <div
+            className='text-white text-center'
+            style={{
+                backgroundImage: `url(${kelasBackgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                height: '100vh',
+                padding: '20px'
+            }}
+        >
+            <h3>Riwayat Pembayaran Keanggotaan</h3>
+            <Table
+                striped
+                bordered
+                hover
+                variant="dark"
+                responsive
+                style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Transparan putih
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                }}
+            >
+                <thead>
+                    <tr>
+                        <th>Tanggal Pembayaran</th>
+                        <th>Total Pembayaran</th>
+                        <th>Status Pembayaran</th>
+                        <th>Jenis Pembayaran</th>
+                        <th>Jenis Paket</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {riwayatPembayaran.map((item) => (
+                        <tr key={item.id_registrasi}>
+                            <td>{item.tanggal_pembayaran}</td>
+                            <td>{item.total_pembayaran.toFixed(2)}</td>
+                            <td>{item.status_pembayaran}</td>
+                            <td>{item.jenis_pembayaran}</td>
+                            <td>{getPaketById(item.id_paket)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </div >
     );
 };
 
