@@ -8,6 +8,9 @@ import ProfilPage from "../pages/profilePage";
 import KelasPage from "../pages/KelasPage";
 import KelasAktifPage from "../pages/KelasAktifPage";
 import RiwayatKeanggotaanPage from "../pages/RiwayatKeanggotaanPage";
+import KeanggotaanPesan from "../pages/KeanggotaanPesan";
+import AdminKelasPage from "../pages/AdminKelasPage";
+import KategoriPage from "../pages/KategoriPage";
 const router = createBrowserRouter([
     {
         path: "*",
@@ -48,7 +51,19 @@ const router = createBrowserRouter([
             {
                 path: "/user/RiwayatKeanggotaanPage",
                 element: <RiwayatKeanggotaanPage/>
-            }
+            },
+            {
+                path: "/user/Keanggotaan",
+                element: <KeanggotaanPesan/>
+            },
+            {
+                path: "/user/AdminKelas",
+                element: <AdminKelasPage/>
+            },
+            {
+                path: "/user/AdminKategori",
+                element: <KategoriPage/>
+            },
         ],
     },
 ]);

@@ -14,6 +14,14 @@ const routes = [
     {
         path: "/user/Keanggotaan",
         name: "Keanggotaan",
+    },
+    {
+        path: "/user/AdminKelas",
+        name: "AdminKelas",
+    },
+    {
+        path: "/user/AdminKategori",
+        name: "AdminKategori",
     }
 ];
 const UserLayout = ({ children }) => {
