@@ -13,6 +13,7 @@ import AdminKelasPage from "../pages/AdminKelasPage";
 import KategoriPage from "../pages/KategoriPage";
 import KelasDetailPage from "../pages/KelasDetailPage";
 import AdminPelatihPage from "../pages/AdminPelatihPage";
+import HomePage from "../pages/HomePage";
 const router = createBrowserRouter([
     {
         path: "*",
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/user",
+                element: <HomePage />
+            },
+            {
+                path: "/user/profil",
                 element: <ProfilPage />,
             },
             {
