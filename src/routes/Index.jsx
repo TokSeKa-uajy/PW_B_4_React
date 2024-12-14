@@ -13,6 +13,9 @@ import AdminKelasPage from "../pages/AdminKelasPage";
 import KategoriPage from "../pages/KategoriPage";
 import KelasDetailPage from "../pages/KelasDetailPage";
 import AdminPelatihPage from "../pages/AdminPelatihPage";
+import AdminLaporanPage from "../pages/AdminLaporanPage";
+import AdminRiwayatKeanggotaan from "../pages/AdminRiwayatKeanggotaan";
+import AdminRiwayatKelas from "../pages/AdminRiwayatKelas";
 import HomePage from "../pages/HomePage";
 const router = createBrowserRouter([
     {
@@ -78,6 +81,18 @@ const router = createBrowserRouter([
             {
                 path: "/user/AdminPelatihPage",
                 element: <AdminPelatihPage/>
+            },
+            {
+                path: "/user/AdminLaporanPage",
+                element: <AdminLaporanPage/>
+            },
+            {
+                path: "/user/AdminLaporanPage/AdminRiwayatKeanggotaan",
+                element: <AdminRiwayatKeanggotaan/>
+            },
+            {
+                path: "/user/AdminLaporanPage/AdminRiwayatKelas",
+                element: <AdminRiwayatKelas/>
             },
         ],
     },

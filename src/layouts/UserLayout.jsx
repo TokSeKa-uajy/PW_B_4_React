@@ -27,6 +27,10 @@ const routes = [
         path: "/user/AdminPelatihPage",
         name: "AdminPelatihPage",
     },
+    {
+        path: "/user/AdminLaporanPage",
+        name: "AdminLaporanPage",
+    },
 ];
 const UserLayout = ({ children }) => {
     return (

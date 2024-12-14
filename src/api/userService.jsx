@@ -1,4 +1,4 @@
-import api from "./api";
+import useAxios from ".";
 
 export const uploadProfilePicture = async (file) => {
     const formData = new FormData();

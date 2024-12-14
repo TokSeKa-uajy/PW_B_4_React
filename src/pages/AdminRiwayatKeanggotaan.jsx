@@ -3,7 +3,7 @@ import { Row, Col, Container, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';;
 // Simulasi API dengan data dummy
-const RiwayatKeanggotaanPage = () => {
+const AdminRiwayatKeanggotaan = () => {
     const navigate = useNavigate();
 
     // Data dummy untuk riwayat pembayaran
@@ -105,4 +105,4 @@ const RiwayatKeanggotaanPage = () => {
     );
 };
 
-export default RiwayatKeanggotaanPage;
+export default AdminRiwayatKeanggotaan;
