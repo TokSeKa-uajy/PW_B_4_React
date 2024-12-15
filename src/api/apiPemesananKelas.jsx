@@ -29,6 +29,21 @@ export const GetAllPemesanan = async () => {
         throw error.response;
     }
 };
+export const GetAllPemesananAdmin = async () => {
+    try {
+        const token = sessionStorage.getItem("token");
+        const response = await useAxios.get("/pemesanan-all-kelas", {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log(response);
+        return response.data.data;
+    } catch (error) {
+        throw error.response;
+    }
+};
 
 export const PesanKelas = async (data) => {
     try {

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';;
+import { GetAllPaketKeanggotaan } from '../api/apiPaketKeanggotaan';
+import { GetAllRegistrasiKeanggotaan } from '../api/apiRegistrasiKeanggotaan';
 // Simulasi API dengan data dummy
 const AdminRiwayatKeanggotaan = () => {
     const navigate = useNavigate();
@@ -10,6 +12,25 @@ const AdminRiwayatKeanggotaan = () => {
     const [riwayatPembayaran, setRiwayatPembayaran] = useState([]);
     const [paketKeanggotaan, setPaketKeanggotaan] = useState([]);
 
+    const fetchAllRegistrasi = async () => {
+        try {
+            const response = await GetAllRegistrasiKeanggotaan();
+            setRiwayatPembayaran(response);
+            console.log("Data Registrasi:", response);
+        } catch (error) {
+            console.error("Error fetching data:", error.response ? error.response.data : error.message);
+        }
+    };
+
+    const fetchAllPaket = async () => {
+        try {
+            const response = await GetAllPaketKeanggotaan();
+            setPaketKeanggotaan(response);
+            console.log("Data Paket:", response);
+        } catch (error) {
+            console.error("Error fetching data:", error.response ? error.response.data : error.message);
+        }
+    }
     // Simulasi data riwayat pembayaran
     const dataRiwayat = [
         {
@@ -48,8 +69,10 @@ const AdminRiwayatKeanggotaan = () => {
     // Menggunakan useEffect untuk mensimulasikan pemanggilan API dan mengatur state
     useEffect(() => {
         // Simulasi fetch data riwayat pembayaran dan paket keanggotaan
-        setRiwayatPembayaran(dataRiwayat);
-        setPaketKeanggotaan(dataPaket);
+        fetchAllRegistrasi();
+        fetchAllPaket();
+        // setRiwayatPembayaran(dataRiwayat);
+        // setPaketKeanggotaan(dataPaket);
     }, []);
 
     // Fungsi untuk mendapatkan nama paket berdasarkan ID paket
@@ -86,15 +109,15 @@ const AdminRiwayatKeanggotaan = () => {
                     <tr>
                         <th>Tanggal Pembayaran</th>
                         <th>Total Pembayaran</th>
-                        <th>Status Pembayaran</th>
                         <th>Jenis Pembayaran</th>
+                        <th>Durasi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {riwayatPembayaran.map((item) => (
                         <tr key={item.id_registrasi}>
                             <td>{item.tanggal_pembayaran}</td>
-                            <td>{item.total_pembayaran.toFixed(2)}</td>
+                            <td>{item.total_pembayaran}</td>
                             <td>{item.jenis_pembayaran}</td>
                             <td>{getPaketById(item.id_paket)}</td>
                         </tr>
