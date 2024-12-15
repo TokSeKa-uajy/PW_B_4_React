@@ -4,6 +4,7 @@ import backgroundImage from "../assets/images/kelasBackground.jpg";
 import { GetAllKelas, CreateKelas } from "../api/apiKelasAdmin";
 import { GetAllKategori } from "../api/apiKategoriAdmin";
 import { GetAllPelatih } from "../api/apiPelatihAdmin";
+import { toast } from "react-toastify";
 
 const AdminKelasPage = () => {
   const [kelasList, setKelasList] = useState([]);
@@ -27,50 +28,49 @@ const AdminKelasPage = () => {
     kapasitas_kelas: "",
   });
 
+  const fetchClasses = () => {
+    GetAllKelas()
+      .then(
+        (data) => {
+          setKelasList(data);
+          setFilteredClasses(data);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  };
+
+  // Panggil API GetAllKategori
+  const fetchCategories = () => {
+    GetAllKategori()
+      .then(
+        (data) => {
+          const updatedCategories = [
+            { id_kategori_kelas: 0, nama_kategori: "Semua", deskripsi_kategori: "Semua kategori" },
+            ...data
+          ];
+          setCategories(updatedCategories);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  };
+
+  const fetchTrainers = () => {
+    GetAllPelatih()
+      .then(
+        (data) => {
+          setTrainers(data);
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+  };
+
   useEffect(() => {
-
-    const fetchClasses = () => {
-      GetAllKelas()
-        .then(
-          (data) => {
-            setKelasList(data);
-            setFilteredClasses(data);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-
-    // Panggil API GetAllKategori
-    const fetchCategories = () => {
-      GetAllKategori()
-        .then(
-          (data) => {
-            const updatedCategories = [
-              { id_kategori_kelas: 0, nama_kategori: "Semua", deskripsi_kategori: "Semua kategori" },
-              ...data
-            ];
-            setCategories(updatedCategories);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-
-    const fetchTrainers = () => {
-      GetAllPelatih()
-        .then(
-          (data) => {
-            setTrainers(data);
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-    };
-
     fetchClasses();
     fetchCategories();
     fetchTrainers();
@@ -148,15 +148,17 @@ const AdminKelasPage = () => {
       newKelas.append("id_pelatih", formData.id_pelatih);
       newKelas.append("id_kategori_kelas", formData.id_kategori_kelas);
       newKelas.append("nama_kelas", formData.nama_kelas);
-      newKelas.append("deskripsi", formData.deskripsi);
+      newKelas.append("deskripsi", formData.deskripsi || ""); // Handle deskripsi nullable
       newKelas.append("hari", formData.hari);
       newKelas.append("jam_mulai", formData.jam_mulai);
       newKelas.append("durasi", formData.durasi);
       newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
+
       // api
       CreateKelas(newKelas)
-        .then((response) => {
-          toast.success(response.message);
+        .then(() => {
+          fetchClasses();
+          handleCloseModal();
         })
         .catch((err) => {
           console.error(err);
@@ -327,7 +329,7 @@ const AdminKelasPage = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Durasi</Form.Label>
                 <Form.Control
-                  type="text"
+                  type="time"
                   name="durasi"
                   value={formData.durasi}
                   onChange={handleInputChange}
