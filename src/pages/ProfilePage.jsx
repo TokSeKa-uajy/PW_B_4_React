@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import { GetUserProfile, UpdateUserProfile } from "../api/apiUser";
+
 import profileVideo from '../assets/backgroundVideo/profileVideo.mp4';
 import photoProfileDummy from '../assets/images/photoProfileDummy.jpeg';
 
@@ -25,12 +27,13 @@ import InputFloatingForm from '../components/auth/inputField';
 
 const ProfilPage = () => {
     const [data, setData] = useState({
-        namaDepan: '123',
-        namaBelakang: '1234',
-        email: "123@123.com",
-        nomorTelepon: '123',
-        jenisKelamin: '123',
+        namaDepan: '',
+        namaBelakang: '',
+        email: "",
+        nomorTelepon: '',
+        jenisKelamin: '',
         password: '',
+        fotoProfil: '',
     });
 
     const genderOptions = [
@@ -55,6 +58,35 @@ const ProfilPage = () => {
     // const [profilePic, setProfilePic] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isEdit, setIsEdit] = useState(false); // Toggle for edit mode
+    const [error, setError] = useState(null);
+    const [profilePic, setProfilePic] = useState(null);
+
+    const fetchProfile = async () => {
+        setLoading(true);
+        try {
+            const userData = await GetUserProfile();
+            console.log("User Data Foto Profil:", userData.foto_profil);
+            const profilePicUrl = userData.foto_profil ? `http://localhost:8000/storage/user/${userData.foto_profil}` : photoProfileDummy;
+            console.log("User Data Foto Profil:", profilePicUrl);
+            setData({
+                namaDepan: userData.nama_depan,
+                namaBelakang: userData.nama_belakang,
+                email: userData.email,
+                nomorTelepon: userData.nomor_telepon,
+                jenisKelamin: userData.jenis_kelamin,
+                fotoProfil: profilePicUrl,
+            });
+        } catch (err) {
+            console.error("Gagal memuat profil:", err);
+            setError("Gagal memuat data profil.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     // Handle file selection
     // const handleFileChange = (event) => {
@@ -78,23 +110,53 @@ const ProfilPage = () => {
         setData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.type.startsWith("image/")) {
+                setProfilePic(file);
+            } else {
+                alert("Silakan pilih file gambar yang valid.");
+            }
+        }
+    };
 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
+
         try {
-            // Simulate profile update action (API call or other logic)
-            // const res = await updateProfile(data); // Use your API call here
-            toast.success('Profile updated successfully');
-            setIsEdit(false); // Exit edit mode after submission
+            const formData = new FormData();
+            formData.append("nama_depan", data.namaDepan);
+            formData.append("nama_belakang", data.namaBelakang);
+            formData.append("email", data.email);
+            formData.append("nomor_telepon", data.nomorTelepon);
+            formData.append("jenis_kelamin", data.jenisKelamin);
+            if (data.password) {
+                formData.append("password", data.password);
+                formData.append("password_confirmation", data.password);
+            }
+            if (profilePic) {
+                formData.append("foto_profil", profilePic);
+            }
+
+            const response = await UpdateUserProfile(formData);
+            alert("Profil berhasil diperbarui!");
+            setIsEdit(false);
+            setData({
+                ...data,
+                ...response.data,
+            });
+            fetchProfile();
         } catch (err) {
             console.error(err);
-            toast.error(err.message || "An error occurred while updating the profile");
+            alert("Gagal memperbarui profil.");
         } finally {
             setLoading(false);
         }
     };
+
 
 
     return (
@@ -109,7 +171,7 @@ const ProfilPage = () => {
                     <form onSubmit={handleSubmit}>
                         <div className={`d-flex justify-content-center ${isEdit ? "mb-2" : "mb-4"}`}>
                             <Image
-                                src={photoProfileDummy}
+                                src={data.fotoProfil}
                                 roundedCircle
                                 alt="Profile"
                                 style={{ width: "150px", height: "150px", objectFit: "cover" }}
@@ -120,7 +182,7 @@ const ProfilPage = () => {
                             <Form.Group className="mb-3">
                                 <Form.Label className="fw-bold">Unggah Foto Profil Baru</Form.Label>
                                 <Form.Control type="file" accept="image/*"
-                                // onChange={handleFileChange} 
+                                onChange={handleFileChange} 
                                 />
                             </Form.Group>
                         )}
