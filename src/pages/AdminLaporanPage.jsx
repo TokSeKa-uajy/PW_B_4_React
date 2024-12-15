@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Table } from "react-bootstrap";
-import axios from "axios";
 import backgroundImage from '../assets/images/kelasBackground.jpg';
+import {GetAllTotalRegistrasiKeanggotaan, getTotalKeuntungan} from "../api/apiLaporanAdmin";
 
 const AdminLaporan = () => {
     const navigate = useNavigate();
@@ -18,24 +18,23 @@ const AdminLaporan = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Simulasi data dummy
-                const kelasResponse = await axios.get("/api/pendapatan/kelas");
-                const meanggotaanResponse = await axios.get("/api/pendapatan/meanggotaan");
-                const totalKelasResponse = await axios.get("/api/total/kelas");
-                const totalKeanggotaanResponse = await axios.get("/api/total/meanggotaan");
+                const response = await GetAllTotalRegistrasiKeanggotaan();
+                const keuntungan = await getTotalKeuntungan(); 
+                console.log("Data Registrasi:", response);
+                console.log("Data keuntungan:", keuntungan);
 
                 setLaporan({
-                    totalPendapatanKelas: kelasResponse.data.totalPendapatanKelas,
-                    totalPendapatanKeanggotaan: meanggotaanResponse.data.totalPendapatanKeanggotaan,
-                    totalKelasDipesan: totalKelasResponse.data.totalKelasDipesan,
-                    totalKeanggotaan: totalKeanggotaanResponse.data.totalKeanggotaan,
+                    totalPendapatanKelas: keuntungan.keuntungan_pemesanan_kelas,
+                    totalPendapatanKeanggotaan: keuntungan.keuntungan_registrasi_keanggotaan,
+                    totalKelasDipesan: response.jumlah_pemesanan_kelas,
+                    totalKeanggotaan: response.jumlah_registrasi_keanggotaan,
                 });
             } catch (error) {
                 console.error("Error fetching laporan data", error);
             }
         };
 
-        // fetchData();
+        fetchData();
     }, []);
 
     return (
@@ -58,7 +57,7 @@ const AdminLaporan = () => {
                             <Card.Body>
                                 <Card.Title>Total Pendapatan dari Kelas</Card.Title>
                                 <Card.Text>
-                                    <h3>Rp {laporan.totalPendapatanKelas.toLocaleString()}</h3>
+                                    <h3>Rp {laporan.totalPendapatanKelas}</h3>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -68,7 +67,7 @@ const AdminLaporan = () => {
                             <Card.Body>
                                 <Card.Title>Total Pendapatan dari Keanggotaan</Card.Title>
                                 <Card.Text>
-                                    <h3>Rp {laporan.totalPendapatanKeanggotaan.toLocaleString()}</h3>
+                                    <h3>Rp {laporan.totalPendapatanKeanggotaan}</h3>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -115,12 +114,12 @@ const AdminLaporan = () => {
                                 <tr>
                                     <td>1</td>
                                     <td>Total Pendapatan Kelas</td>
-                                    <td>{laporan.totalPendapatanKelas.toLocaleString()}</td>
+                                    <td>{laporan.totalPendapatanKelas}</td>
                                 </tr>
                                 <tr>
                                     <td>2</td>
                                     <td>Total Pendapatan Keanggotaan</td>
-                                    <td>{laporan.totalPendapatanKeanggotaan.toLocaleString()}</td>
+                                    <td>{laporan.totalPendapatanKeanggotaan}</td>
                                 </tr>
                             </tbody>
                         </Table>
