@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import backgroundImage from "../assets/images/kelasBackground.jpg";
+
+import { GetKelasById } from '../api/apiKelasAdmin';
+import { GetPaketKelasByKelasId } from '../api/apiPaketKelasAdmin';
+import { PesanKelas } from "../api/apiPemesananKelas";
 
 const KelasDetailPage = () => {
     const { id } = useParams(); // Ambil ID kelas dari parameter URL
@@ -11,74 +15,85 @@ const KelasDetailPage = () => {
     const [paymentType, setPaymentType] = useState("Kartu Kredit");
     const [selectedDuration, setSelectedDuration] = useState("1_month");
     const [durasiHarga, setDurasiHarga] = useState({});
-    const [trainers, setTrainers] = useState([
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' },
-        { id: 3, name: 'Michael Johnson' },
-        { id: 4, name: 'Emily Davis' },
-    ]);
+    const navigate = useNavigate();
 
     // Simulasi fetch API untuk detail kelas berdasarkan ID
     useEffect(() => {
-        const fetchKelasDetail = async () => {
-            const dummyData = [
-                {
-                    id: 1,
-                    nama_kelas: "Yoga for Beginners",
-                    hari: "Senin",
-                    jam_mulai: "08:00",
-                    durasi: "60 mins",
-                    kapasitas_kelas: 20,
-                    deskripsi: "Kelas yoga untuk pemula untuk membantu fleksibilitas dan relaksasi.",
-                    id_pelatih: 1
-                },
-                {
-                    id: 2,
-                    nama_kelas: "Advanced Pilates",
-                    hari: "Rabu",
-                    jam_mulai: "10:00",
-                    durasi: "90 mins",
-                    kapasitas_kelas: 15,
-                    deskripsi: "Kelas pilates lanjutan untuk meningkatkan kekuatan inti.",
-                    id_pelatih: 2
-                },
-                {
-                    id: 3,
-                    nama_kelas: "HIIT Training",
-                    hari: "Senin",
-                    jam_mulai: "07:00",
-                    durasi: "45 mins",
-                    kapasitas_kelas: 30,
-                    deskripsi: "Latihan intensitas tinggi untuk membakar kalori secara maksimal.",
-                    id_pelatih: 3
-                },
-            ];
+        // const fetchKelasDetail = async () => {
+        //     const dummyData = [
+        //         {
+        //             id: 1,
+        //             nama_kelas: "Yoga for Beginners",
+        //             hari: "Senin",
+        //             jam_mulai: "08:00",
+        //             durasi: "60 mins",
+        //             kapasitas_kelas: 20,
+        //             deskripsi: "Kelas yoga untuk pemula untuk membantu fleksibilitas dan relaksasi.",
+        //             id_pelatih: 1
+        //         },
+        //         {
+        //             id: 2,
+        //             nama_kelas: "Advanced Pilates",
+        //             hari: "Rabu",
+        //             jam_mulai: "10:00",
+        //             durasi: "90 mins",
+        //             kapasitas_kelas: 15,
+        //             deskripsi: "Kelas pilates lanjutan untuk meningkatkan kekuatan inti.",
+        //             id_pelatih: 2
+        //         },
+        //         {
+        //             id: 3,
+        //             nama_kelas: "HIIT Training",
+        //             hari: "Senin",
+        //             jam_mulai: "07:00",
+        //             durasi: "45 mins",
+        //             kapasitas_kelas: 30,
+        //             deskripsi: "Latihan intensitas tinggi untuk membakar kalori secara maksimal.",
+        //             id_pelatih: 3
+        //         },
+        //     ];
 
-            const kelas = dummyData.find((kelas) => kelas.id === parseInt(id));
-            if (kelas) {
-                const pelatih = trainers.find(trainer => trainer.id === kelas.id_pelatih);
-                setKelasDetail({ ...kelas, pelatih: pelatih ? pelatih.name : "Unknown" });
+        //     const kelas = dummyData.find((kelas) => kelas.id === parseInt(id));
+        //     if (kelas) {
+        //         const pelatih = trainers.find(trainer => trainer.id === kelas.id_pelatih);
+        //         setKelasDetail({ ...kelas, pelatih: pelatih ? pelatih.name : "Unknown" });
+        //     }
+        // };
+
+        const fetchKelasDetail = async () => {
+            try {
+                const detail = await GetKelasById(id);
+                setKelasDetail(detail);
+
+                try {
+                    const paketKelas = await GetPaketKelasByKelasId(id);
+
+                    if (paketKelas && paketKelas.length > 0) {
+                        const hargaMap = {};
+                        paketKelas.map((paket) => {
+                            console.log("Paket:", paket.durasi, paket.harga); // Debug
+                            hargaMap[paket.durasi] = paket.harga;
+                        });
+                        setDurasiHarga(hargaMap);
+                        setSelectedDuration(Object.keys(hargaMap)[0]);
+                    } else {
+                        console.warn("Paket kelas tidak ditemukan.");
+                        setDurasiHarga({});
+                    }
+                } catch (error) {
+                    console.error("Gagal memuat paket kelas:", error);
+                    setDurasiHarga({});
+                }
+            } catch (error) {
+                console.error("Gagal memuat detail kelas:", error);
+                alert("Detail kelas tidak ditemukan.");
+                navigate("/user/KelasPage");
             }
         };
 
-        const fetchDurasiHarga = async () => {
-            // Simulasi API untuk mengambil data Paket_kelas
-            const dummyPaketKelas = [
-                { durasi: "1_month", harga: 200000 },
-                { durasi: "6_months", harga: 1000000 },
-                { durasi: "1_year", harga: 1500000 },
-            ];
-
-            const hargaMap = {};
-            dummyPaketKelas.forEach(paket => {
-                hargaMap[paket.durasi] = paket.harga;
-            });
-            setDurasiHarga(hargaMap);
-        };
 
         fetchKelasDetail();
-        fetchDurasiHarga();
-    }, [id, trainers]);
+    }, [id]);
 
     const handleShowModal = () => {
         setShowModal(true);
@@ -91,19 +106,25 @@ const KelasDetailPage = () => {
     const handleBooking = async () => {
         setIsBooking(true);
         try {
-            // Simulasi API booking kelas
+            const paketKelas = await GetPaketKelasByKelasId(id);
+
+            const paketTerpilih = paketKelas.find((paket) => paket.durasi === selectedDuration);
+            
+            if (!paketTerpilih) {
+                alert("Paket kelas tidak ditemukan untuk durasi ini!");
+                return;
+            }
+
             const payload = {
-                id_user: 123, // Contoh ID user
-                id_kelas: kelasDetail.id,
-                durasi: selectedDuration,
-                total_pembayaran: durasiHarga[selectedDuration],
+                id_paket_kelas: paketTerpilih.id_paket_kelas,
+                tanggal_mulai: new Date().toISOString().split("T")[0],
                 jenis_pembayaran: paymentType,
-                tanggal_booking: new Date().toISOString().split("T")[0],
-                status: "booked",
             };
 
-            alert("Kelas berhasil dipesan!", payload);
+            const response = await PesanKelas(payload);
+            alert("Pemesanan berhasil dilakukan!");
             handleCloseModal();
+            navigate("/user/Kelas");
         } catch (error) {
             console.error("Error:", error);
             alert("Terjadi kesalahan saat memesan kelas.");
@@ -111,6 +132,7 @@ const KelasDetailPage = () => {
             setIsBooking(false);
         }
     };
+
 
     if (!kelasDetail) {
         return <div>Loading...</div>;
@@ -144,7 +166,7 @@ const KelasDetailPage = () => {
                                     <br />
                                     <strong>Kapasitas:</strong> {kelasDetail.kapasitas_kelas} orang
                                     <br />
-                                    <strong>Pelatih:</strong> {kelasDetail.pelatih}
+                                    <strong>Pelatih:</strong> {kelasDetail.pelatih.nama_depan} {kelasDetail.pelatih.nama_belakang}
                                     <br />
                                     <strong>Deskripsi:</strong> {kelasDetail.deskripsi}
                                 </Card.Text>

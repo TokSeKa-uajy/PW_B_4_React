@@ -76,7 +76,7 @@ const KelasPage = () => {
                 cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-
+        
         setFilteredClasses(filtered);
     }, [selectedCategory, selectedDay, searchQuery, classes]);
 

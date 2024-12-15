@@ -51,7 +51,7 @@ const HomePage = () => {
             Latihan lebih dari sekadar fisik, ini tentang menemukan potensi diri. Wujudkan bersama ATMA SPORT.
           </p>
           <Button className="member-btn"
-            onClick={() => navigate(`/user/kelas`)}
+            onClick={() => navigate(`/user/Keanggotaan`)}
           >
             Coba Membership
           </Button>
