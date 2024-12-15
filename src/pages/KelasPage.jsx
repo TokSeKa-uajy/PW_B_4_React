@@ -4,6 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import "./css/kelas.css";
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
 
+import { GetAllKelas } from "../api/apiKelasAdmin";
+import { GetAllKategori } from "../api/apiKategoriAdmin";
+
+// Catatan API :
+// 1. Panggil API GetAllKelas done
+// 2. Panggil API GetAllKategori
+
 const KelasPage = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState([]);
@@ -12,55 +19,52 @@ const KelasPage = () => {
     const [categories, setCategories] = useState([]);
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [searchQuery, setSearchQuery] = useState("");
-    const [trainers, setTrainers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(6); // Default to minimum of 6 items per page
 
     useEffect(() => {
-        const fetchCategoriesAndTrainers = () => {
-            const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
-            setCategories(dummyCategories);
-
-            const dummyTrainers = [
-                { id: 1, name: 'John Doe' },
-                { id: 2, name: 'Jane Smith' },
-                { id: 3, name: 'Michael Johnson' },
-                { id: 4, name: 'Emily Davis' },
-            ];
-            setTrainers(dummyTrainers);
-        };
-
-        fetchCategoriesAndTrainers();
-    }, []);
-
-    useEffect(() => {
+        // Panggil API GetAllKelas
         const fetchClasses = () => {
-            const dummyClasses = [
-                { id: 1, image: 'https://via.placeholder.com/150', nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga' },
-                { id: 2, image: 'https://via.placeholder.com/150', nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates' },
-                { id: 3, image: 'https://via.placeholder.com/150', nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT' },
-                { id: 4, image: 'https://via.placeholder.com/150', nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio' },
-                { id: 5, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' },
-                { id: 6, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Rabu', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' }
-            ];
-
-            setClasses(dummyClasses);
-            setFilteredClasses(dummyClasses);
+            GetAllKelas()
+                .then(
+                    (data) => {
+                        console.log(data);
+                        setClasses(data);
+                        setFilteredClasses(data);
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+        };
+        // Panggil API GetAllKategori
+        const fetchCategories = () => {
+            GetAllKategori()
+                .then(
+                    (data) => {
+                        const updatedCategories = [
+                            { id_kategori_kelas: 0, nama_kategori: "Semua", deskripsi_kategori: "Semua kategori" },
+                            ...data
+                        ];
+                        setCategories(updatedCategories);
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
         };
 
         fetchClasses();
-    }, []);
+        fetchCategories();
 
-    const mencariPelatih = (kelas) => {
-        return trainers.find(t => t.id === kelas.id_pelatih);
-    };
+    }, []);
 
     // Filtering and pagination logic
     useEffect(() => {
         let filtered = classes;
 
         if (selectedCategory !== 'Semua') {
-            filtered = filtered.filter(c => c.category === selectedCategory);
+            filtered = filtered.filter(c => c.kategori.nama_kategori === selectedCategory);
         }
 
         if (selectedDay !== 'Semua') {
@@ -95,7 +99,7 @@ const KelasPage = () => {
             minHeight: '100vh',
             padding: '20px'
         }}>
-            <Container className="text-white ">
+            <Container className="text-white mt-5">
                 <Row className="mt-2 d-flex justify-content-end">
                     <Col xs="auto" className="me-3">
                         <Dropdown>
@@ -107,9 +111,9 @@ const KelasPage = () => {
                                 {categories.map((category, index) => (
                                     <Dropdown.Item
                                         key={index}
-                                        onClick={() => setSelectedCategory(category)}
+                                        onClick={() => setSelectedCategory(category.nama_kategori)}
                                     >
-                                        {category}
+                                        {category.nama_kategori}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -159,38 +163,24 @@ const KelasPage = () => {
                     </Col>
                 </Row>
 
-                <h2 className="mb-4">Kelas yang Tersedia</h2>
+                <h2 className="mb-4 mt-3">Kelas yang Tersedia</h2>
                 <Row>
                     {currentClasses.map((kelas) => {
-                        const trainer = mencariPelatih(kelas);
+                        console.log(kelas);
                         return (
-                            <Col key={kelas.id} md={6} className="mb-4">
+                            <Col key={kelas.id_kelas} md={6} className="mb-4">
                                 <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-dark bg-opacity-25">
-                                    <Col xs={3} className="d-flex justify-content-center align-items-center">
-                                        <Image
-                                            src={kelas.image}
-                                            alt={kelas.nama_kelas}
-                                            className="kelas-image"
-                                            fluid
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                                borderRadius: '10%',
-                                            }}
-                                        />
-                                    </Col>
                                     <div className="flex-grow-1 ms-4">
                                         <h5 className="mb-1">{kelas.nama_kelas}</h5>
                                         <p className="mb-1"><strong>Hari:</strong> {kelas.hari}</p>
                                         <p className="mb-1"><strong>Jam Mulai:</strong> {kelas.jam_mulai}</p>
                                         <p className="mb-1"><strong>Durasi:</strong> {kelas.durasi}</p>
-                                        <p className="mb-1"><strong>Pelatih:</strong> {trainer ? trainer.name : 'Unknown'}</p>
-                                        <p className="mb-1"><strong>Tersedia:</strong> {kelas.kapasitas_kelas} peserta</p>
+                                        <p className="mb-1"><strong>Pelatih:</strong> {kelas.pelatih?.nama_depan} {kelas.pelatih?.nama_belakang}</p>
+                                        <p className="mb-1"><strong>Kapasitas Kelas:</strong> {kelas.kapasitas_kelas} peserta</p>
                                     </div>
                                     <Button
                                         variant="primary"
-                                        onClick={() => navigate(`/user/KelasDetail/${kelas.id}`)}
+                                        onClick={() => navigate(`/user/KelasDetail/${kelas.id_kelas}`)}
                                     >
                                         Detail
                                     </Button>

@@ -96,6 +96,20 @@ const router = createBrowserRouter([
             },
         ],
     },
+    {
+        path: "/admin",
+        element: (
+            // <ProtectedRoutes>
+                <UserLayout />
+            // </ProtectedRoutes>
+        ),
+        children: [
+            {
+                path: "/admin",
+                element: <AdminLaporanPage />
+            },
+        ],
+    },
 ]);
 
 const AppRouter = () => {

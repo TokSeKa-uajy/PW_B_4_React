@@ -31,7 +31,7 @@ const LoginPage = () => {
             sessionStorage.setItem("user", JSON.stringify(response.user));
 
             if (response.user.role === "admin") {
-                navigate("/admin/dashboard"); 
+                navigate("/admin"); 
             } else {
                 navigate("/user"); 
             }

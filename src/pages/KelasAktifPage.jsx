@@ -45,11 +45,11 @@ const KelasAktifPage = () => {
     useEffect(() => {
         const fetchClasses = () => {
             const dummyClasses = [
-                { id: 1, image: 'https://via.placeholder.com/150', nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga', tanggal_selesai: '2025-11-10' },
-                { id: 2, image: 'https://via.placeholder.com/150', nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates', tanggal_selesai: '2024-12-01' },
-                { id: 3, image: 'https://via.placeholder.com/150', nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT', tanggal_selesai: '2025-10-01' },
-                { id: 4, image: 'https://via.placeholder.com/150', nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio', tanggal_selesai: '2025-09-15' },
-                { id: 5, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength', tanggal_selesai: '2025-08-20' },
+                { id: 1, nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga', tanggal_selesai: '2025-11-10' },
+                { id: 2, nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates', tanggal_selesai: '2024-12-01' },
+                { id: 3, nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT', tanggal_selesai: '2025-10-01' },
+                { id: 4, nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio', tanggal_selesai: '2025-09-15' },
+                { id: 5, nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength', tanggal_selesai: '2025-08-20' },
             ];
 
             setClasses(dummyClasses);
@@ -207,20 +207,6 @@ const KelasAktifPage = () => {
                         return (
                             <Col key={kelas.id} md={6} className="mb-4">
                                 <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-dark bg-opacity-25">
-                                    <Col xs={3} className="d-flex justify-content-center align-items-center">
-                                        <Image
-                                            src={kelas.image}
-                                            alt={kelas.nama_kelas}
-                                            className="kelas-image"
-                                            fluid
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                                borderRadius: '10%',
-                                            }}
-                                        />
-                                    </Col>
                                     <div className="flex-grow-1 ms-4">
                                         <h5 className="mb-1">{kelas.nama_kelas}</h5>
                                         <p className="mb-1"><strong>Hari:</strong> {kelas.hari}</p>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Modal, Form, Dropdown } from "react-bootstrap";
 import backgroundImage from "../assets/images/kelasBackground.jpg";
-import axios from "axios";
+import { GetAllKelas, CreateKelas } from "../api/apiKelasAdmin";
+import { GetAllKategori } from "../api/apiKategoriAdmin";
+import { GetAllPelatih } from "../api/apiPelatihAdmin";
 
 const AdminKelasPage = () => {
   const [kelasList, setKelasList] = useState([]);
@@ -15,50 +17,67 @@ const AdminKelasPage = () => {
   const [modalType, setModalType] = useState("add"); // "add" or "edit" or "delete"
   const [selectedKelas, setSelectedKelas] = useState(null);
   const [formData, setFormData] = useState({
+    id_pelatih: "",
+    id_kategori_kelas: "",
     nama_kelas: "",
+    deskripsi: "",
     hari: "",
     jam_mulai: "",
     durasi: "",
     kapasitas_kelas: "",
-    id_pelatih: "",
-    category: "",
   });
 
   useEffect(() => {
-    const fetchData = () => {
-      const dummyClasses = [
-        { id: 1, image: 'https://via.placeholder.com/150', nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga' },
-        { id: 2, image: 'https://via.placeholder.com/150', nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates' },
-        { id: 3, image: 'https://via.placeholder.com/150', nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT' },
-        { id: 4, image: 'https://via.placeholder.com/150', nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio' },
-        { id: 5, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' },
-        { id: 6, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Rabu', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' }
-      ];
-      setKelasList(dummyClasses);
-      setFilteredClasses(dummyClasses);
+
+    const fetchClasses = () => {
+      GetAllKelas()
+        .then(
+          (data) => {
+            setKelasList(data);
+            setFilteredClasses(data);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
     };
 
+    // Panggil API GetAllKategori
     const fetchCategories = () => {
-      const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
-      setCategories(dummyCategories);
+      GetAllKategori()
+        .then(
+          (data) => {
+            const updatedCategories = [
+              { id_kategori_kelas: 0, nama_kategori: "Semua", deskripsi_kategori: "Semua kategori" },
+              ...data
+            ];
+            setCategories(updatedCategories);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
     };
 
     const fetchTrainers = () => {
-      const dummyTrainers = [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' },
-        { id: 3, name: 'Michael Johnson' },
-        { id: 4, name: 'Emily Davis' },
-      ];
-      setTrainers(dummyTrainers);
+      GetAllPelatih()
+        .then(
+          (data) => {
+            setTrainers(data);
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
     };
 
-    fetchData();
+    fetchClasses();
     fetchCategories();
     fetchTrainers();
   }, []);
 
   const [customPrices, setCustomPrices] = useState({
+    // default
     "1_month": 200000,
     "6_months": 1000000,
     "1_year": 1500000,
@@ -68,21 +87,22 @@ const AdminKelasPage = () => {
     let filtered = kelasList;
 
     if (selectedCategory !== 'Semua') {
-      filtered = filtered.filter((c) => c.category === selectedCategory);
+      filtered = filtered.filter(c => c.kategori.nama_kategori === selectedCategory);
     }
 
     if (selectedDay !== 'Semua') {
-      filtered = filtered.filter((c) => c.hari === selectedDay);
+      filtered = filtered.filter(c => c.hari === selectedDay);
     }
 
     if (searchQuery) {
-      filtered = filtered.filter((cls) =>
+      filtered = filtered.filter(cls =>
         cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     setFilteredClasses(filtered);
   }, [selectedCategory, selectedDay, searchQuery, kelasList]);
+
 
   const handleShowModal = (type, kelas = null) => {
     setModalType(type);
@@ -95,10 +115,11 @@ const AdminKelasPage = () => {
         durasi: kelas.durasi,
         kapasitas_kelas: kelas.kapasitas_kelas,
         id_pelatih: kelas.id_pelatih,
-        category: kelas.category,
+        id_kategori_kelas: kelas.id_kategori_kelas,
+        deskripsi: kelas.deskripsi,
       });
     } else {
-      setFormData({ nama_kelas: "", hari: "", jam_mulai: "", durasi: "", kapasitas_kelas: "", id_pelatih: "", category: "" });
+      setFormData({ nama_kelas: "", hari: "", jam_mulai: "", durasi: "", kapasitas_kelas: "", id_pelatih: "", id_kategori_kelas: "", deskripsi: "" });
     }
     setShowModal(true);
   };
@@ -123,8 +144,24 @@ const AdminKelasPage = () => {
 
   const handleSubmit = async () => {
     if (modalType === "add") {
-      const newKelas = { ...formData, id: kelasList.length + 1 };
-      setKelasList([...kelasList, newKelas]);
+      const newKelas = new FormData();
+      newKelas.append("id_pelatih", formData.id_pelatih);
+      newKelas.append("id_kategori_kelas", formData.id_kategori_kelas);
+      newKelas.append("nama_kelas", formData.nama_kelas);
+      newKelas.append("deskripsi", formData.deskripsi);
+      newKelas.append("hari", formData.hari);
+      newKelas.append("jam_mulai", formData.jam_mulai);
+      newKelas.append("durasi", formData.durasi);
+      newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
+      // api
+      CreateKelas(newKelas)
+        .then((response) => {
+          toast.success(response.message);
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.dark(JSON.stringify(err.message));
+        });
     } else if (modalType === "edit" && selectedKelas) {
       const updatedList = kelasList.map((kelas) =>
         kelas.id === selectedKelas.id ? { ...selectedKelas, ...formData } : kelas
@@ -154,44 +191,58 @@ const AdminKelasPage = () => {
     >
       <Container>
         <h2 className="text-center text-white mb-4">Manajemen Kelas</h2>
-        <Row className="mb-3">
-          <Col md={4} className="mb-2">
-            <Form.Select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              {categories.map((category, index) => (
-                <option key={index} value={category}>{category}</option>
-              ))}
-            </Form.Select>
+        <Row className="mb-3 justify-content-end">
+          <Col xs="auto" className="ms-3">
+            <Button variant="success" className="mb-3" onClick={() => handleShowModal("add")}>Tambah Kelas</Button>
           </Col>
-          <Col md={4} className="mb-2">
-            <Form.Select
-              value={selectedDay}
-              onChange={(e) => setSelectedDay(e.target.value)}
-            >
-              <option value="Semua">Semua</option>
-              <option value="Senin">Senin</option>
-              <option value="Selasa">Selasa</option>
-              <option value="Rabu">Rabu</option>
-              <option value="Kamis">Kamis</option>
-              <option value="Jumat">Jumat</option>
-              <option value="Sabtu">Sabtu</option>
-              <option value="Minggu">Minggu</option>
-            </Form.Select>
+          <Col></Col>
+          <Col xs="auto" className="me-3">
+            <Dropdown>
+              <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                Filter berdasarkan kategori: {selectedCategory}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="scrollable-dropdown">
+                {categories.map((category, index) => (
+                  <Dropdown.Item
+                    key={index}
+                    onClick={() => setSelectedCategory(category.nama_kategori)}
+                  >
+                    {category.nama_kategori}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </Col>
-          <Col md={4} className="mb-2">
-            <Form.Control
-              type="text"
-              placeholder="Cari Nama Kelas"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <Col xs="auto">
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-day">
+                Filter berdasarkan Hari: {selectedDay}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {['Semua', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map((day, index) => (
+                  <Dropdown.Item
+                    key={index}
+                    onClick={() => setSelectedDay(day)}
+                  >
+                    {day}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </Col>
+          <Col xs="auto" className="ms-3">
+            <Form.Group>
+              <Form.Control
+                type="text"
+                placeholder="Cari Kelas..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+
         </Row>
-        <div className="d-flex justify-content-end">
-          <Button variant="success" className="mb-3" onClick={() => handleShowModal("add")}>Tambah Kelas</Button>
-        </div>
         <Row>
           {filteredClasses.map((kelas) => (
             <Col key={kelas.id} md={4} className="mb-4">
@@ -226,7 +277,6 @@ const AdminKelasPage = () => {
           ))}
         </Row>
       </Container>
-
       {/* Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
@@ -295,13 +345,13 @@ const AdminKelasPage = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Kategori</Form.Label>
                 <Form.Select
-                  name="category"
-                  value={formData.category}
+                  name="id_kategori_kelas"
+                  value={formData.id_kategori_kelas}
                   onChange={handleInputChange}
                 >
                   <option value="">Pilih Kategori</option>
                   {categories.map((category, index) => (
-                    <option key={index} value={category}>{category}</option>
+                    <option key={index} value={category.id_kategori_kelas}>{category.nama_kategori}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -314,7 +364,7 @@ const AdminKelasPage = () => {
                 >
                   <option value="">Pilih Pelatih</option>
                   {trainers.map((trainer) => (
-                    <option key={trainer.id} value={trainer.id}>{trainer.name}</option>
+                    <option key={trainer.id_pelatih} value={trainer.id_pelatih}>{trainer.nama_depan} {trainer.nama_belakang}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -331,6 +381,17 @@ const AdminKelasPage = () => {
                     />
                   </Form.Group>
                 ))}
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Deskripsi</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="deskripsi"
+                  value={formData.deskripsi}
+                  onChange={handleInputChange}
+                  placeholder="Masukkan deskripsi kelas"
+                />
               </Form.Group>
             </Form>
           )}
