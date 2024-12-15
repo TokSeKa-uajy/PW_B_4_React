@@ -88,23 +88,6 @@ const ProfilPage = () => {
         fetchProfile();
     }, []);
 
-    // Handle file selection
-    // const handleFileChange = (event) => {
-    //     const file = event.target.files[0];
-    //     if (file) {
-    //         // Check if the file is an image
-    //         if (file.type.startsWith("image/")) {
-    //             const reader = new FileReader();
-    //             reader.onloadend = () => {
-    //                 setProfilePic(reader.result); // Set the image preview
-    //             };
-    //             reader.readAsDataURL(file); // Read the file as a data URL
-    //         } else {
-    //             toast.error("Please select a valid image file");
-    //         }
-    //     }
-    // };
-
     const handleChange = (event) => {
         const { name, value } = event.target;
         setData((prevData) => ({ ...prevData, [name]: value }));
@@ -156,8 +139,6 @@ const ProfilPage = () => {
             setLoading(false);
         }
     };
-
-
 
     return (
         <div className='video-background'>
@@ -222,7 +203,7 @@ const ProfilPage = () => {
                                 type="email"
                                 value={data.email}
                                 onChange={handleChange}
-                                disabled={!isEdit} // Disable when not in edit mode
+                                disabled={!isEdit}
                             />
                         </div>
 
@@ -235,7 +216,7 @@ const ProfilPage = () => {
                                 type="text"
                                 value={data.nomorTelepon}
                                 onChange={handleChange}
-                                disabled={!isEdit} // Disable when not in edit mode
+                                disabled={!isEdit}
                             />
                         </div>
 
@@ -250,7 +231,7 @@ const ProfilPage = () => {
                                 ]}
                                 value={data.jenisKelamin}
                                 onChange={handleChange}
-                                disabled={!isEdit} // Disable when not in edit mode
+                                disabled={!isEdit}
                             />
                         </div>
 

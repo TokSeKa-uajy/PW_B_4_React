@@ -6,15 +6,47 @@ import profileImg from "../assets/images/photoProfileDummy.jpeg";
 
 import { Logout } from "../api/apiAuth";
 import { toast } from "react-toastify";
+import { GetUserProfile } from "../api/apiUser";
 
 const SideNavbar = ({ routes, user }) => {
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const [data, setData] = useState({
-        namaDepan: "Lalaland",
+        namaDepan: "",
     });
+
+    const fetchProfile = async () => {
+        console.log("fetchProfile dipanggil");
+        setLoading(true);
+        try {
+            const userData = await GetUserProfile();
+            console.log("Response User Data:", userData);
+            console.log("User Data Foto Profil:", userData.foto_profil);
+            const profilePicUrl = userData.foto_profil ? `http://localhost:8000/storage/user/${userData.foto_profil}` : photoProfileDummy;
+            console.log("User Data Foto Profil:", profilePicUrl);
+            setData({
+                namaDepan: userData.nama_depan,
+                namaBelakang: userData.nama_belakang,
+                email: userData.email,
+                nomorTelepon: userData.nomor_telepon,
+                jenisKelamin: userData.jenis_kelamin,
+                fotoProfil: profilePicUrl,
+            });
+        } catch (err) {
+            console.error("Gagal memuat profil:", err);
+            setError("Gagal memuat data profil.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     const toggleSidebar = () => setShow(!show);
 
@@ -90,7 +122,7 @@ const SideNavbar = ({ routes, user }) => {
                     >
                         {/* Foto Profil */}
                         <Image
-                            src={profileImg}
+                            src={data.fotoProfil}
                             alt="Profile"
                             roundedCircle
                             style={{
