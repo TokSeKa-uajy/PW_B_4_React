@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Modal, Form, Dropdown } from "react-bootstrap";
 import backgroundImage from "../assets/images/kelasBackground.jpg";
-import { GetAllKelas, CreateKelas } from "../api/apiKelasAdmin";
+import { GetAllKelas, CreateKelas, UpdateKelas, DeleteKelas } from "../api/apiKelasAdmin";
 import { GetAllKategori } from "../api/apiKategoriAdmin";
 import { GetAllPelatih } from "../api/apiPelatihAdmin";
 import { toast } from "react-toastify";
@@ -142,42 +142,54 @@ const AdminKelasPage = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (modalType === "add") {
-      const newKelas = new FormData();
-      newKelas.append("id_pelatih", formData.id_pelatih);
-      newKelas.append("id_kategori_kelas", formData.id_kategori_kelas);
-      newKelas.append("nama_kelas", formData.nama_kelas);
-      newKelas.append("deskripsi", formData.deskripsi || ""); // Handle deskripsi nullable
-      newKelas.append("hari", formData.hari);
-      newKelas.append("jam_mulai", formData.jam_mulai);
-      newKelas.append("durasi", formData.durasi);
-      newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
+  const formatTime = (time) => {
+    if (!time) return ""; // Jika waktu kosong, kembalikan string kosong
+    const [hours, minutes] = time.split(":");
+    return `${parseInt(hours, 10)}:${minutes}`; // Menghapus leading zero dari jam
+  };
 
+  const handleSubmit = async () => {
+    const newKelas = new FormData();
+    newKelas.append("id_pelatih", formData.id_pelatih);
+    newKelas.append("id_kategori_kelas", formData.id_kategori_kelas);
+    newKelas.append("nama_kelas", formData.nama_kelas);
+    newKelas.append("deskripsi", formData.deskripsi || ""); // Handle deskripsi nullable
+    newKelas.append("hari", formData.hari);
+    newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
+    // Format waktu sebelum dikirim
+  newKelas.append("jam_mulai", formatTime(formData.jam_mulai));
+  newKelas.append("durasi", formatTime(formData.durasi));
+    if (modalType === "add") {
       // api
       CreateKelas(newKelas)
         .then(() => {
           fetchClasses();
-          handleCloseModal();
         })
         .catch((err) => {
           console.error(err);
-          toast.dark(JSON.stringify(err.message));
         });
     } else if (modalType === "edit" && selectedKelas) {
-      const updatedList = kelasList.map((kelas) =>
-        kelas.id === selectedKelas.id ? { ...selectedKelas, ...formData } : kelas
-      );
-      setKelasList(updatedList);
+      UpdateKelas(selectedKelas.id_kelas, newKelas)
+        .then(() => {
+          fetchClasses();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
     handleCloseModal();
   };
 
   const handleDelete = async () => {
     if (selectedKelas) {
-      const updatedList = kelasList.filter((kelas) => kelas.id !== selectedKelas.id);
-      setKelasList(updatedList);
-    }
+      DeleteKelas(selectedKelas.id_kelas)
+        .then(() => {
+          fetchClasses();
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+      }
     handleCloseModal();
   };
 
