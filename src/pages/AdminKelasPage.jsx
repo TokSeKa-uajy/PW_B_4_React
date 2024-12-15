@@ -4,7 +4,7 @@ import backgroundImage from "../assets/images/kelasBackground.jpg";
 import { GetAllKelas, CreateKelas, UpdateKelas, DeleteKelas } from "../api/apiKelasAdmin";
 import { GetAllKategori } from "../api/apiKategoriAdmin";
 import { GetAllPelatih } from "../api/apiPelatihAdmin";
-import { toast } from "react-toastify";
+import { createPaketKelas, GetAllPaketKelasById } from "../api/apiPaketKelasAdmin";
 
 const AdminKelasPage = () => {
   const [kelasList, setKelasList] = useState([]);
@@ -78,9 +78,9 @@ const AdminKelasPage = () => {
 
   const [customPrices, setCustomPrices] = useState({
     // default
-    "1_month": 200000,
-    "6_months": 1000000,
-    "1_year": 1500000,
+    "1_bulan": 200000,
+    "6_bulan": 1000000,
+    "1_tahun": 1500000,
   });
 
   useEffect(() => {
@@ -118,8 +118,25 @@ const AdminKelasPage = () => {
         id_kategori_kelas: kelas.id_kategori_kelas,
         deskripsi: kelas.deskripsi,
       });
+      GetAllPaketKelasById(kelas.id_kelas)
+        .then((data) => {
+          const updatedPrices = {
+            "1_bulan": data.find((p) => p.durasi === "1_bulan")?.harga || 200000,
+            "6_bulan": data.find((p) => p.durasi === "6_bulan")?.harga || 1000000,
+            "1_tahun": data.find((p) => p.durasi === "1_tahun")?.harga || 1500000,
+          };
+          setCustomPrices(updatedPrices);
+        })
+        .catch((error) => {
+          console.error("Gagal memuat paket kelas:", error);
+        });
     } else {
       setFormData({ nama_kelas: "", hari: "", jam_mulai: "", durasi: "", kapasitas_kelas: "", id_pelatih: "", id_kategori_kelas: "", deskripsi: "" });
+      setCustomPrices({
+        "1_bulan": 200000,
+        "6_bulan": 1000000,
+        "1_tahun": 1500000,
+      });
     }
     setShowModal(true);
   };
@@ -157,12 +174,39 @@ const AdminKelasPage = () => {
     newKelas.append("hari", formData.hari);
     newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
     // Format waktu sebelum dikirim
-  newKelas.append("jam_mulai", formatTime(formData.jam_mulai));
-  newKelas.append("durasi", formatTime(formData.durasi));
+    newKelas.append("jam_mulai", formatTime(formData.jam_mulai));
+    newKelas.append("durasi", formatTime(formData.durasi));
     if (modalType === "add") {
       // api
       CreateKelas(newKelas)
-        .then(() => {
+        .then((data) => {
+          // Panggil API untuk membuat data paket kelas berdasarkan id_kelas
+          const paketDurasi = [
+            { durasi: "1_bulan", harga: customPrices["1_bulan"] },
+            { durasi: "6_bulan", harga: customPrices["6_bulan"] },
+            { durasi: "1_tahun", harga: customPrices["1_tahun"] },
+          ];
+
+          // Array promises untuk panggilan API
+          const paketPromises = paketDurasi.map((paket) =>
+            createPaketKelas({
+              id_kelas: data.id_kelas, // ID kelas dari hasil CreateKelas
+              durasi: paket.durasi,
+              harga: paket.harga,
+            })
+          );
+
+          // Panggil API untuk membuat data paket kelas berdasarkan id_kelas
+          // Jalankan semua promise secara paralel
+          Promise.all(paketPromises)
+            .then(() => {
+              console.log("Semua paket kelas berhasil dibuat.");
+              fetchClasses(); // Refresh daftar kelas
+            })
+            .catch((err) => {
+              console.error("Gagal membuat paket kelas:", err);
+            });
+
           fetchClasses();
         })
         .catch((err) => {
@@ -171,11 +215,24 @@ const AdminKelasPage = () => {
     } else if (modalType === "edit" && selectedKelas) {
       UpdateKelas(selectedKelas.id_kelas, newKelas)
         .then(() => {
+          GetAllPaketKelasById(selectedKelas.id_kelas)
+            .then((data) => {
+              const updatedPrices = {
+                "1_bulan": data.find((p) => p.durasi === "1_bulan")?.harga || 200000,
+                "6_bulan": data.find((p) => p.durasi === "6_bulan")?.harga || 1000000,
+                "1_tahun": data.find((p) => p.durasi === "1_tahun")?.harga || 1500000,
+              };
+              setCustomPrices(updatedPrices);
+            })
+            .catch((error) => {
+              console.error("Gagal memuat paket kelas:", error);
+            });
           fetchClasses();
         })
         .catch((err) => {
           console.error(err);
         });
+
     }
     handleCloseModal();
   };
@@ -189,7 +246,7 @@ const AdminKelasPage = () => {
         .catch((err) => {
           console.error(err);
         })
-      }
+    }
     handleCloseModal();
   };
 
