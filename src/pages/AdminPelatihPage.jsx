@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
 import backgroundImage from "../assets/images/kelasBackground.jpg";
-import axios from "axios";
+import { GetAllPelatih, createPelatih, updatePelatih, hapusPelatih } from "../api/apiPelatihAdmin";
+import { getFotoPelatih } from '../api';
+
 
 const AdminPelatihPage = () => {
     // State untuk menyimpan daftar pelatih
@@ -19,18 +21,15 @@ const AdminPelatihPage = () => {
         jenis_kelamin: "",
         foto_profil: null,
     });
-
-    useEffect(() => {
+    const fetchPelatihData = () => {
         // Simulasi fetch data dummy pelatih
-        const fetchPelatihData = () => {
-            const dummyPelatih = [
-                { id: 1, nama_depan: "John", nama_belakang: "Doe", jenis_kelamin: 0, foto_profil: "https://via.placeholder.com/150" },
-                { id: 2, nama_depan: "Jane", nama_belakang: "Smith", jenis_kelamin: 1, foto_profil: "https://via.placeholder.com/150" },
-            ];
-            setPelatihList(dummyPelatih);
-            setFilteredPelatih(dummyPelatih);
-        };
-
+        GetAllPelatih().then((data) => {
+            setPelatihList(data);
+            setFilteredPelatih(data);
+        }
+        );
+    };
+    useEffect(() => {
         fetchPelatihData();
     }, []);
 
@@ -72,21 +71,38 @@ const AdminPelatihPage = () => {
     };
 
     // Menyimpan data pelatih baru atau memperbarui pelatih yang sudah ada
-    const handleSubmit = async () => {
-        if (modalType === "add") {
-            const newPelatih = { ...formData, id: pelatihList.length + 1, foto_profil: URL.createObjectURL(formData.foto_profil) };
-            setPelatihList([...pelatihList, newPelatih]);
-        } else if (modalType === "edit" && selectedPelatih) {
-            const updatedList = pelatihList.map(pelatih => pelatih.id === selectedPelatih.id ? { ...pelatih, ...formData, foto_profil: URL.createObjectURL(formData.foto_profil) } : pelatih);
-            setPelatihList(updatedList);
+    const handleSubmit = () => {
+        const newPelatih = new FormData();
+        newPelatih.append("nama_depan", formData.nama_depan);
+        newPelatih.append("nama_belakang", formData.nama_belakang);
+        newPelatih.append("jenis_kelamin", formData.jenis_kelamin);
+        if (formData.foto_profil instanceof File) {
+            newPelatih.append("foto_profil", formData.foto_profil);
         }
-        handleCloseModal();
+        console.log(newPelatih.get("nama_depan"));
+        if (modalType === "add") {
+            // Create Pake API
+            createPelatih(newPelatih)
+                .then(() => {
+                    fetchPelatihData();
+                    handleCloseModal();
+                })
+        } else if (modalType === "edit" && selectedPelatih) {
+            // Update Pake API
+            updatePelatih(selectedPelatih.id_pelatih, newPelatih)
+                .then((data) => {
+                    fetchPelatihData();
+                    handleCloseModal();
+                })
+        }
     };
 
     // Menghapus pelatih
     const handleDelete = (id) => {
-        const updatedList = pelatihList.filter(pelatih => pelatih.id !== id);
-        setPelatihList(updatedList);
+        hapusPelatih(id).then(() => {
+            fetchPelatihData();
+            handleCloseModal();
+        })
     };
 
     return (
@@ -110,16 +126,22 @@ const AdminPelatihPage = () => {
                 {/* Daftar pelatih yang difilter */}
                 <Row>
                     {filteredPelatih.map((pelatih) => (
-                        <Col key={pelatih.id} md={4} className="mb-4">
+                        <Col key={pelatih.id} md={4} className="mb-4 mt-4">
                             <Card>
-                                <Card.Img variant="top" src={pelatih.foto_profil} alt="Foto Profil" style={{ height: "200px", objectFit: "cover" }} />
+                                <Card.Img
+                                    variant="top"
+                                    src={pelatih.foto_profil ? getFotoPelatih(pelatih.foto_profil) : "https://via.placeholder.com/200x200?text=No+Image"}
+                                    alt="Foto Profil"
+                                    style={{ height: "200px", objectFit: "cover" }}
+                                />
+
                                 <Card.Body>
                                     <Card.Title>{pelatih.nama_depan} {pelatih.nama_belakang}</Card.Title>
                                     <Card.Text>
-                                        Jenis Kelamin: {pelatih.jenis_kelamin === 0 ? "Laki-laki" : "Perempuan"}
+                                        Jenis Kelamin: {pelatih.jenis_kelamin}
                                     </Card.Text>
                                     <Button variant="primary" onClick={() => handleShowModal("edit", pelatih)}>Edit</Button>
-                                    <Button variant="danger" className="ms-2" onClick={() => handleDelete(pelatih.id)}>Hapus</Button>
+                                    <Button variant="danger" className="ms-2" onClick={() => handleDelete(pelatih.id_pelatih)}>Hapus</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -162,8 +184,8 @@ const AdminPelatihPage = () => {
                                 onChange={handleInputChange}
                             >
                                 <option value="">Pilih Jenis Kelamin</option>
-                                <option value={0}>Laki-laki</option>
-                                <option value={1}>Perempuan</option>
+                                <option value={"pria"}>Pria</option>
+                                <option value={"wanita"}>Wanita</option>
                             </Form.Select>
                         </Form.Group>
 
@@ -171,7 +193,8 @@ const AdminPelatihPage = () => {
                             <Form.Label>Foto Profil</Form.Label>
                             <Form.Control
                                 type="file"
-                                accept=".png, .jpg, .jpeg"
+                                name="foto_profil"
+                                accept="image/*"
                                 onChange={handleFileChange}
                             />
                         </Form.Group>
