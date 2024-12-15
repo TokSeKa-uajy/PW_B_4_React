@@ -4,7 +4,7 @@ import backgroundImage from "../assets/images/kelasBackground.jpg";
 import { GetAllKelas, CreateKelas, UpdateKelas, DeleteKelas } from "../api/apiKelasAdmin";
 import { GetAllKategori } from "../api/apiKategoriAdmin";
 import { GetAllPelatih } from "../api/apiPelatihAdmin";
-import { createPaketKelas, GetAllPaketKelasById } from "../api/apiPaketKelasAdmin";
+import { createPaketKelas, GetAllPaketKelasById, updatePaketKelas } from "../api/apiPaketKelasAdmin";
 
 const AdminKelasPage = () => {
   const [kelasList, setKelasList] = useState([]);
@@ -215,24 +215,52 @@ const AdminKelasPage = () => {
     } else if (modalType === "edit" && selectedKelas) {
       UpdateKelas(selectedKelas.id_kelas, newKelas)
         .then(() => {
-          GetAllPaketKelasById(selectedKelas.id_kelas)
-            .then((data) => {
-              const updatedPrices = {
-                "1_bulan": data.find((p) => p.durasi === "1_bulan")?.harga || 200000,
-                "6_bulan": data.find((p) => p.durasi === "6_bulan")?.harga || 1000000,
-                "1_tahun": data.find((p) => p.durasi === "1_tahun")?.harga || 1500000,
-              };
-              setCustomPrices(updatedPrices);
-            })
-            .catch((error) => {
-              console.error("Gagal memuat paket kelas:", error);
-            });
-          fetchClasses();
         })
         .catch((err) => {
           console.error(err);
         });
+      GetAllPaketKelasById(selectedKelas.id_kelas)
+        .then((existingPaket) => {
+          const paketDurasi = [
+            { durasi: "1_bulan", harga: customPrices["1_bulan"] },
+            { durasi: "6_bulan", harga: customPrices["6_bulan"] },
+            { durasi: "1_tahun", harga: customPrices["1_tahun"] },
+          ];
 
+          const paketPromises = paketDurasi.map((paket) => {
+            // Cek apakah paket sudah ada
+            const existing = existingPaket.find((p) => p.durasi === paket.durasi);
+
+            if (existing) {
+              // Update paket yang sudah ada
+              return updatePaketKelas(existing.id_paket_kelas, {
+                id_kelas: selectedKelas.id_kelas,
+                durasi: paket.durasi,
+                harga: paket.harga,
+              });
+            } else {
+              // Buat paket baru jika belum ada
+              return createPaketKelas({
+                id_kelas: selectedKelas.id_kelas,
+                durasi: paket.durasi,
+                harga: paket.harga,
+              });
+            }
+          });
+
+          // Jalankan semua update dan create secara paralel
+          Promise.all(paketPromises)
+            .then(() => {
+              console.log("Paket kelas berhasil diperbarui.");
+              fetchClasses();
+            })
+            .catch((err) => {
+              console.error("Gagal memperbarui paket kelas:", err);
+            });
+        })
+        .catch((err) => {
+          console.error("Gagal mengambil data paket kelas:", err);
+        });
     }
     handleCloseModal();
   };
