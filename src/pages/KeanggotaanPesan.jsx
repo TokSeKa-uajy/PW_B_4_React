@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
 import backgroundImage from "../assets/images/kelasBackground.jpg";
-import keanggotaanController from "../controllers/keanggotaanController";
+import { GetAllPaketKeanggotaan } from "../api/apiPaketKeanggotaan";
+import { createRegistrasiKeanggotaan, checkMembershipStatus } from "../api/apiRegistrasiKeanggotaan";
 
 const KeanggotaanPesan = () => {
     const [membershipPackages, setMembershipPackages] = useState([]);
@@ -10,27 +11,24 @@ const KeanggotaanPesan = () => {
     const [paymentType, setPaymentType] = useState("Kartu Kredit");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isMember, setIsMember] = useState(false);
-
+    
     // Simulasi API untuk mengecek status keanggotaan cek di tabel
-    const checkMembershipStatus = async () => {
+    const fetchMembershipStatus = async () => {
+        const status = await checkMembershipStatus();
+        setIsMember(status);
+    };
+
+    const fetchData = () => {
         // Simulate API response
-        const dummyResponse = { isMember: false }; // Ganti dengan false untuk tes
-        setIsMember(dummyResponse.isMember);
+        GetAllPaketKeanggotaan().then((data) => {
+            setMembershipPackages(data);
+        })
     };
 
     // Simulasi fetch data API untuk paket keanggotaan
     useEffect(() => {
-        const fetchData = () => {
-            const dummyData = [
-                { id: 1, durasi: "1_month", harga: 200000.0 },
-                { id: 2, durasi: "6_months", harga: 1000000.0 },
-                { id: 3, durasi: "1_year", harga: 1500000.0 },
-            ];
-            setMembershipPackages(dummyData);
-        };
-
         fetchData();
-        checkMembershipStatus();
+        fetchMembershipStatus();
     }, []);
 
     const handleShowModal = (packageData) => {
@@ -43,28 +41,25 @@ const KeanggotaanPesan = () => {
         setShowModal(false);
     };
 
-    const handlePayment = async () => {
+    const handlePayment = () => {
         if (!selectedPackage) return;
 
         setIsSubmitting(true);
         try {
-            const payload = {
-                id_user: 123, // Contoh ID user
-                id_paket_keanggotaan: selectedPackage.id,
-                tanggal_pembayaran: new Date().toISOString().split("T")[0],
-                total_pembayaran: selectedPackage.harga,
-                status_pembayaran: "paid",
+            const newAnggota = {
+                id_paket_keanggotaan: selectedPackage.id_paket_keanggotaan,
                 jenis_pembayaran: paymentType,
             };
-
-            const response = await keanggotaanController.registerMembership(payload);
-            alert("Pembayaran berhasil!", response);
-            handleCloseModal();
+            
+            createRegistrasiKeanggotaan(newAnggota);
+            alert("Pembayaran berhasil!!!");
+                handleCloseModal();
         } catch (error) {
             console.error("Error:", error);
             alert("Terjadi kesalahan saat memproses pembayaran.");
         } finally {
             setIsSubmitting(false);
+            fetchMembershipStatus();
         }
     };
 

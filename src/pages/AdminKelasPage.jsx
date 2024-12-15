@@ -345,7 +345,7 @@ const AdminKelasPage = () => {
         <Row>
           {filteredClasses.map((kelas) => (
             <Col key={kelas.id} md={4} className="mb-4">
-              <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}>
+              <Card style={{ backgroundColor: "rgba(245, 255, 255, 0.47)" }}>
                 <Card.Body>
                   <Card.Title>{kelas.nama_kelas}</Card.Title>
                   <Card.Text>
