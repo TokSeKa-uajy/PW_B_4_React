@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
 import backgroundImage from "../assets/images/kelasBackground.jpg";
-import axios from "axios";
+import { GetAllKategori, CreateKategori, EditKategori, DeleteKategori } from "../api/apiKategoriAdmin";
 
 const KategoriPage = () => {
     const [categories, setCategories] = useState([]);
@@ -15,17 +15,25 @@ const KategoriPage = () => {
         deskripsi_kategori: "",
     });
     // Simualasi data kategori dari API
+
+    // Panggil API GetAllKategori
+    const fetchCategories = () => {
+        GetAllKategori()
+            .then(
+                (data) => {
+                    const updatedCategories = [
+                        ...data
+                    ];
+                    setCategories(updatedCategories);
+                    setFilteredCategories(updatedCategories);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
+    };
+
     useEffect(() => {
-        const fetchCategories = async () => {
-            const dummyCategories = [
-                { id: 1, nama_kategori: "Yoga", deskripsi_kategori: "Kategori untuk kelas yoga" },
-                { id: 2, nama_kategori: "Pilates", deskripsi_kategori: "Kategori untuk kelas pilates" },
-                { id: 3, nama_kategori: "Cardio", deskripsi_kategori: "Kategori untuk kelas cardio" },
-                { id: 4, nama_kategori: "Strength", deskripsi_kategori: "Kategori untuk kelas strength training" },
-            ];
-            setCategories(dummyCategories);
-            setFilteredCategories(dummyCategories);
-        };
         fetchCategories();
     }, []);
 
@@ -45,6 +53,7 @@ const KategoriPage = () => {
                 deskripsi_kategori: category.deskripsi_kategori,
             });
         } else {
+            CreateKategori
             setFormData({ nama_kategori: "", deskripsi_kategori: "" });
         }
         setShowModal(true);
@@ -62,22 +71,42 @@ const KategoriPage = () => {
 
     const handleSubmit = async () => {
         // disini simulasi API create kategori
+        const newKategori = new FormData();
+        newKategori.append("nama_kategori", formData.nama_kategori);
+        newKategori.append("deskripsi_kategori", formData.deskripsi_kategori);
         if (modalType === "add") {
-            const newCategory = { id: categories.length + 1, ...formData };
-            setCategories([...categories, newCategory]);
-        } else if (modalType === "edit" && selectedCategory) {
-            const updatedCategories = categories.map((category) =>
-                category.id === selectedCategory.id ? { ...selectedCategory, ...formData } : category
+            CreateKategori(newKategori).then(
+                () => {
+                    alert("Kategori berhasil ditambahkan!");
+                    fetchCategories();
+                }
+            ).catch(
+                (error) => {
+                    alert(error);
+                }
             );
-            setCategories(updatedCategories);
+        } else if (modalType === "edit" && selectedCategory) {
+            EditKategori(selectedCategory.id_kategori_kelas, formData).then(() => {
+                alert("Kategori berhasil diubah!");
+                fetchCategories();
+            }
+            ).catch(
+                (error) => {
+                    alert(error);
+                }
+            );
         }
         handleCloseModal();
     };
 
     const handleDelete = async () => {
         if (selectedCategory) {
-            const updatedCategories = categories.filter((category) => category.id !== selectedCategory.id);
-            setCategories(updatedCategories);
+            DeleteKategori(selectedCategory.id_kategori_kelas).then(() => {
+                alert("Kategori berhasil dihapus!");
+                fetchCategories();
+            }).catch((error) => {
+                alert(error);
+            })
         }
         handleCloseModal();
     };

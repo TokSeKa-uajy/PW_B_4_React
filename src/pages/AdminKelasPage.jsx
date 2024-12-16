@@ -133,9 +133,9 @@ const AdminKelasPage = () => {
     } else {
       setFormData({ nama_kelas: "", hari: "", jam_mulai: "", durasi: "", kapasitas_kelas: "", id_pelatih: "", id_kategori_kelas: "", deskripsi: "" });
       setCustomPrices({
-        "1_bulan": 200000,
-        "6_bulan": 1000000,
-        "1_tahun": 1500000,
+        "1_bulan": null,
+        "6_bulan": null,
+        "1_tahun": null,
       });
     }
     setShowModal(true);
@@ -160,9 +160,8 @@ const AdminKelasPage = () => {
   };
 
   const formatTime = (time) => {
-    if (!time) return ""; // Jika waktu kosong, kembalikan string kosong
-    const [hours, minutes] = time.split(":");
-    return `${parseInt(hours, 10)}:${minutes}`; // Menghapus leading zero dari jam
+    const date = new Date(`1970-01-01T${time}Z`); // Parsing string waktu
+    return date.toISOString().slice(11, 16); // Mengambil bagian jam dan menit (H:i)
   };
 
   const handleSubmit = async () => {
@@ -200,7 +199,7 @@ const AdminKelasPage = () => {
           // Jalankan semua promise secara paralel
           Promise.all(paketPromises)
             .then(() => {
-              console.log("Semua paket kelas berhasil dibuat.");
+              alert("Kelas berhasil dibuat.");
               fetchClasses(); // Refresh daftar kelas
             })
             .catch((err) => {
@@ -215,56 +214,50 @@ const AdminKelasPage = () => {
     } else if (modalType === "edit" && selectedKelas) {
       UpdateKelas(selectedKelas.id_kelas, newKelas)
         .then(() => {
+          GetAllPaketKelasById(selectedKelas.id_kelas)
+            .then((existingPaket) => {
+              const paketDurasi = [
+                { durasi: "1_bulan", harga: customPrices["1_bulan"] },
+                { durasi: "6_bulan", harga: customPrices["6_bulan"] },
+                { durasi: "1_tahun", harga: customPrices["1_tahun"] },
+              ];
+              const paketPromises = paketDurasi.map((paket) => {
+                const existing = existingPaket.find((p) => p.durasi === paket.durasi);
+                if (existing) {
+                  const newPaketKelas = new FormData();
+                  newPaketKelas.append("id_kelas", selectedKelas.id_kelas);
+                  newPaketKelas.append("durasi", paket.durasi);
+                  newPaketKelas.append("harga", paket.harga);
+                  return updatePaketKelas(existing.id_paket_kelas, newPaketKelas);
+                } else {
+                  return createPaketKelas({
+                    id_kelas: selectedKelas.id_kelas,
+                    durasi: paket.durasi,
+                    harga: paket.harga,
+                  });
+                }
+              });
+
+              // Jalankan semua update dan create secara paralel
+              Promise.all(paketPromises)
+                .then(() => {
+                  console.log("Paket kelas berhasil diperbarui.");
+                  fetchClasses();
+                })
+                .catch((err) => {
+                  console.error("Gagal memperbarui paket kelas:", err);
+                });
+            })
+            .catch((err) => {
+              console.error("Gagal mengambil data paket kelas:", err);
+            });
         })
         .catch((err) => {
           console.error(err);
         });
-      GetAllPaketKelasById(selectedKelas.id_kelas)
-        .then((existingPaket) => {
-          const paketDurasi = [
-            { durasi: "1_bulan", harga: customPrices["1_bulan"] },
-            { durasi: "6_bulan", harga: customPrices["6_bulan"] },
-            { durasi: "1_tahun", harga: customPrices["1_tahun"] },
-          ];
-
-          const paketPromises = paketDurasi.map((paket) => {
-            // Cek apakah paket sudah ada
-            const existing = existingPaket.find((p) => p.durasi === paket.durasi);
-
-            if (existing) {
-              // Update paket yang sudah ada
-              return updatePaketKelas(existing.id_paket_kelas, {
-                id_kelas: selectedKelas.id_kelas,
-                durasi: paket.durasi,
-                harga: paket.harga,
-              });
-            } else {
-              // Buat paket baru jika belum ada
-              return createPaketKelas({
-                id_kelas: selectedKelas.id_kelas,
-                durasi: paket.durasi,
-                harga: paket.harga,
-              });
-            }
-          });
-
-          // Jalankan semua update dan create secara paralel
-          Promise.all(paketPromises)
-            .then(() => {
-              console.log("Paket kelas berhasil diperbarui.");
-              fetchClasses();
-            })
-            .catch((err) => {
-              console.error("Gagal memperbarui paket kelas:", err);
-            });
-        })
-        .catch((err) => {
-          console.error("Gagal mengambil data paket kelas:", err);
-        });
     }
     handleCloseModal();
   };
-
   const handleDelete = async () => {
     if (selectedKelas) {
       DeleteKelas(selectedKelas.id_kelas)
@@ -277,7 +270,6 @@ const AdminKelasPage = () => {
     }
     handleCloseModal();
   };
-
   return (
     <div
       style={{
