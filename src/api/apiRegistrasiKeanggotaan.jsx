@@ -16,28 +16,12 @@ export const createRegistrasiKeanggotaan = async (data) => {
     }
 };
 
-// export const showRegistrasiKeanggotaanByUser = async () => {
-//     try {
-//         const token = sessionStorage.getItem('token');
-//         const response = await useAxios.get("/registrasi-keanggotaan", {
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         // console.log(response.data.data);
-//         return response.data.data;
-//     } catch (error) {
-//         throw error.response;
-//     }
-// }
-
 // Fungsi untuk mengecek status keanggotaan user
 
 export const checkMembershipStatus = async () => {
     try {
         const token = sessionStorage.getItem('token');
-        const response = await useAxios.get("/registrasi-keanggotaan", {
+        const response = await useAxios.get("/registrasi-keanggotaan-checkStatus", {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -68,3 +52,21 @@ export const GetAllRegistrasiKeanggotaan = async () => {
         return false;
     }
 };
+
+export const getAllRegistrasiKeanggotaanByID = async () => {
+    try {
+        const token = sessionStorage.getItem('token');
+        const response = await useAxios.get('registrasi-keanggotaan-user', {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log("Full Response:", response);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error.response;
+    }
+};
+
