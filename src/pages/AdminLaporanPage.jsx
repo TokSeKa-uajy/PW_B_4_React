@@ -14,7 +14,6 @@ const AdminLaporan = () => {
         totalKeanggotaan: 0,
     });
 
-    // Fetching data dummy dengan simulasi API
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -50,7 +49,6 @@ const AdminLaporan = () => {
             <Container className="py-4 text-white">
                 <h2 className="text-center mb-4">Laporan Pendapatan dan Statistik</h2>
 
-                {/* Kartu Total Pendapatan */}
                 <Row className="gy-4">
                     <Col md={6}>
                         <Card className="shadow-sm">
@@ -74,7 +72,6 @@ const AdminLaporan = () => {
                     </Col>
                 </Row>
 
-                {/* Kartu Statistik */}
                 <Row className="gy-4 mt-4">
                     <Col md={6}>
                         <Card className="shadow-sm">
@@ -98,7 +95,6 @@ const AdminLaporan = () => {
                     </Col>
                 </Row>
 
-                {/* Tabel Data Pendapatan */}
                 <Row className="mt-5">
                     <Col>
                         <h4 className="text-center mb-4">Detail Pendapatan</h4>
@@ -126,7 +122,6 @@ const AdminLaporan = () => {
                     </Col>
                 </Row>
 
-                {/* Tombol Navigasi */}
                 <Row className="mt-5 d-flex justify-content-center">
                     <Col md={6} className="text-center">
                         <Button

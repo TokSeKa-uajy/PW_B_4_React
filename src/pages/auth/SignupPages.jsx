@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Register } from '../../api/apiAuth';
 import InputFloatingForm from '../../components/auth/inputField';
-import { toast } from 'react-toastify';
 import './authStyle.css';
 import authVideo from '../../assets/backgroundVideo/authVideo.mp4';  // Ensure the path matches where the video is stored
 
@@ -36,12 +35,12 @@ function Signup() {
 
     try {
       const res = await Register(data);
-      toast.success("Registration successful! Please log in.");
+      alert("Registration successful! Please log in.");
       navigate("/");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Registration failed. Please try again.";
-      toast.error(errorMessage);
+      alert(errorMessage);
       console.error(error);
     } finally {
       setLoading(false);

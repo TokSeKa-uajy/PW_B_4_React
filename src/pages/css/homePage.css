@@ -1,4 +1,3 @@
-/* Video background styling */
 .background-video {
   position: fixed;
   top: 0;
@@ -7,13 +6,10 @@
   height: 100%;
   object-fit: cover;
   z-index: -1;
-  /* Let the video be behind the content */
 }
 
-/* Style untuk kontainer dan teks */
 .container-content {
   position: relative;
-  /* Pastikan elemen berada di atas video */
   z-index: 1;
   text-align: center;
   color: white;
@@ -28,10 +24,8 @@
   height: 50vh;
   text-align: center;
   color: white;
-  /* Teks putih agar terlihat di atas video */
   position: relative;
   z-index: 1;
-  /* margin-bottom: 50%; */
 }
 
 .container-carousel2 {
@@ -42,7 +36,6 @@
   height: 50vh;
   text-align: center;
   color: white;
-  /* Teks putih agar terlihat di atas video */
   position: relative;
   z-index: 1;
   margin-top: 10%;
@@ -63,7 +56,6 @@ main p {
   font-size: 16px;
   color: white;
   background-color: transparent;
-  /* Warna biru */
   border-color: white;
   cursor: pointer;
   border-radius: 15px;
@@ -71,7 +63,6 @@ main p {
 
 .member-btn:hover {
   background-color: #0d6efd;
-  /* Warna lebih gelap saat hover */
   border-color: white;
 }
 

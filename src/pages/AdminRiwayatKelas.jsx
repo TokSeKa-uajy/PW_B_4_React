@@ -7,8 +7,6 @@ import { GetAllPaketKelas } from '../api/apiPaketKelasAdmin';
 import axios from 'axios';
 const AdminRiwayatKelas = () => {
     const navigate = useNavigate();
-
-    // Data dummy untuk pemesanan kelas
     const [pemesananKelas, setPemesananKelas] = useState([]);
     const [paketKelas, setPaketKelas] = useState([]);
     const [paketKelasList, setPaketKelasList] = useState([]);
@@ -32,54 +30,17 @@ const AdminRiwayatKelas = () => {
         }
     };
 
-    // // Simulasi data pemesanan kelas
-    // const dataPemesanan = [
-    //     {
-    //         id_pemesanan_kelas: 1,
-    //         id_user: 101,
-    //         id_paket_kelas: 1,
-    //         tanggal_pemesanan: '2024-10-01',
-    //         jenis_pembayaran: 'Kartu Kredit',
-    //         tanggal_mulai: '2024-10-05',
-    //         tanggal_selesai: '2024-10-10',
-    //     },
-    //     {
-    //         id_pemesanan_kelas: 2,
-    //         id_user: 102,
-    //         id_paket_kelas: 2,
-    //         tanggal_pemesanan: '2024-09-15',
-    //         jenis_pembayaran: 'E Wallet',
-    //         tanggal_mulai: '2024-09-20',
-    //         tanggal_selesai: '2024-09-25',
-    //     },
-    //     {
-    //         id_pemesanan_kelas: 3,
-    //         id_user: 103,
-    //         id_paket_kelas: 3,
-    //         tanggal_pemesanan: '2024-08-10',
-    //         jenis_pembayaran: 'Kartu Debit',
-    //         tanggal_mulai: '2024-08-15',
-    //         tanggal_selesai: '2024-08-20',
-    //     },
-    // ];
-
-    // Simulasi data paket kelas
     const dataPaket = [
         { id_paket_kelas: 1, durasi: '5_days', harga: 500000 },
         { id_paket_kelas: 2, durasi: '10_days', harga: 1000000 },
         { id_paket_kelas: 3, durasi: '15_days', harga: 1500000 },
     ];
 
-    // Menggunakan useEffect untuk mensimulasikan pemanggilan API dan mengatur state
     useEffect(() => {
-        // Simulasi fetch data pemesanan kelas dan paket kelas
-        
         fetchDataPesanan();
         fetchPaketKelas();
-        //setPaketKelas(dataPaket);
     }, []);
 
-    // Fungsi untuk mendapatkan harga paket berdasarkan ID paket
     const getDurasiById = (id_paket_kelas) => {
         const paket = paketKelasList.find((item) => item.id_paket_kelas === id_paket_kelas);
         return paket ? paket.durasi : "N/A";
@@ -110,7 +71,7 @@ const AdminRiwayatKelas = () => {
                     responsive
                     variant="dark"
                     style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.7)', // Transparan putih
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
                         borderRadius: '10px',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                     }}

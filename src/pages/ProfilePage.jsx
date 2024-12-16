@@ -5,8 +5,6 @@ import {
     ButtonGroup,
 } from "react-bootstrap";
 
-// import { useMutation } from "@tanstack/react-query";
-// import { GetMyContents, DeleteContent } from "../api/apiContent";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -17,13 +15,6 @@ import photoProfileDummy from '../assets/images/photoProfileDummy.jpeg';
 
 import DropdownFloatingForm from '../components/auth/DropdownFloatingForm';
 import InputFloatingForm from '../components/auth/inputField';
-
-// TODO
-// logika API yang krusial : 
-// 1. Kalau data kosong gak usah kirim ke server
-// 2. Kalau data ada diisi, lakukan update ke server tapi, kalau data lama sama dengan data baru, gak usah kirim ke server
-// 3. Aku butuh API untuk mengambil data profile dari server
-// 4. Aku butuh API khusus untuk Foto Profil update dan read
 
 const ProfilPage = () => {
     const [data, setData] = useState({
@@ -52,12 +43,11 @@ const ProfilPage = () => {
         },
     ];
 
-    const navigate = useNavigate(); // React Router's hook for navigation
-    const location = useLocation(); // Get current location/pathname
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    // const [profilePic, setProfilePic] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isEdit, setIsEdit] = useState(false); // Toggle for edit mode
+    const [isEdit, setIsEdit] = useState(false);
     const [error, setError] = useState(null);
     const [profilePic, setProfilePic] = useState(null);
 
@@ -168,7 +158,6 @@ const ProfilPage = () => {
                             </Form.Group>
                         )}
 
-                        {/* Nama Depan */}
                         <div className="mb-3">
                             <InputFloatingForm
                                 label="Nama Depan"
@@ -177,11 +166,10 @@ const ProfilPage = () => {
                                 type="text"
                                 value={data.namaDepan}
                                 onChange={handleChange}
-                                disabled={!isEdit} // Disable when not in edit mode
+                                disabled={!isEdit}
                             />
                         </div>
 
-                        {/* Nama Belakang */}
                         <div className="mb-3">
                             <InputFloatingForm
                                 label="Nama Belakang"
@@ -190,11 +178,10 @@ const ProfilPage = () => {
                                 type="text"
                                 value={data.namaBelakang}
                                 onChange={handleChange}
-                                disabled={!isEdit} // Disable when not in edit mode
+                                disabled={!isEdit}
                             />
                         </div>
 
-                        {/* Email */}
                         <div className="mb-3">
                             <InputFloatingForm
                                 label="Email"
@@ -207,7 +194,6 @@ const ProfilPage = () => {
                             />
                         </div>
 
-                        {/* Nomor Telepon */}
                         <div className="mb-3">
                             <InputFloatingForm
                                 label="Nomor Telepon"
@@ -220,7 +206,6 @@ const ProfilPage = () => {
                             />
                         </div>
 
-                        {/* Jenis Kelamin (Dropdown) */}
                         <div className="mb-3">
                             <DropdownFloatingForm
                                 label="Jenis Kelamin"
@@ -253,7 +238,7 @@ const ProfilPage = () => {
                                     <Button
                                         key={index}
                                         className="w-100 ms-2"
-                                        onClick={() => navigate(route.path)} // Using navigate directly
+                                        onClick={() => navigate(route.path)}
                                     >
                                         {route.name}
                                     </Button>

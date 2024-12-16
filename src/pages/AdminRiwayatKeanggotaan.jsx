@@ -4,11 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';;
 import { GetAllPaketKeanggotaan } from '../api/apiPaketKeanggotaan';
 import { GetAllRegistrasiKeanggotaan } from '../api/apiRegistrasiKeanggotaan';
-// Simulasi API dengan data dummy
 const AdminRiwayatKeanggotaan = () => {
     const navigate = useNavigate();
 
-    // Data dummy untuk riwayat pembayaran
     const [riwayatPembayaran, setRiwayatPembayaran] = useState([]);
     const [paketKeanggotaan, setPaketKeanggotaan] = useState([]);
 
@@ -32,14 +30,11 @@ const AdminRiwayatKeanggotaan = () => {
         }
     }
 
-    // Menggunakan useEffect untuk mensimulasikan pemanggilan API dan mengatur state
     useEffect(() => {
-        // Simulasi fetch data riwayat pembayaran dan paket keanggotaan
         fetchAllRegistrasi();
         fetchAllPaket();
     }, []);
 
-    // Fungsi untuk mendapatkan nama paket berdasarkan ID paket
     const getPaketById = (id) => {
         const paket = paketKeanggotaan.find(p => p.id_paket_keanggotaan === id);
         return paket ? paket.durasi : 'Tidak diketahui';
@@ -64,7 +59,7 @@ const AdminRiwayatKeanggotaan = () => {
                 variant="dark"
                 responsive
                 style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Transparan putih
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     borderRadius: '10px',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 }}

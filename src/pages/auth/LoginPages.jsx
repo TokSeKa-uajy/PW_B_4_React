@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import InputFloatingForm from '../../components/auth/inputField';
 import { Login } from "../../api/apiAuth";
-import { toast } from 'react-toastify';
 import './authStyle.css';
 import authVideo from '../../assets/backgroundVideo/authVideo.mp4';
 
@@ -38,7 +37,7 @@ const LoginPage = () => {
             }
         } catch (err) {
             setError(err.message || "Login failed. Please try again.");
-            toast.error(err.message || "Login failed. Please try again.");
+            alert(err.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }

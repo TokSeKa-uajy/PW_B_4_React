@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
-import { GetAllUmpanBalik } from "../api/apiUmpanBalik"; // Import API
+import { GetAllUmpanBalik } from "../api/apiUmpanBalik";
 import umpanBalikBackgroundImage from "../assets/images/kelasBackground.jpg";
 
 const AdminUmpanBalikPage = () => {
-    const [umpanBalik, setUmpanBalik] = useState([]); // State untuk umpan balik
+    const [umpanBalik, setUmpanBalik] = useState([]);
 
-    // Fetch data umpan balik
     const fetchUmpanBalik = async () => {
         try {
             const response = await GetAllUmpanBalik();
-            setUmpanBalik(response); // Set state dengan data dari API
+            setUmpanBalik(response);
             console.log("Data Umpan Balik:", response);
         } catch (error) {
             console.error(
@@ -20,7 +19,6 @@ const AdminUmpanBalikPage = () => {
         }
     };
 
-    // useEffect untuk memanggil fetchUmpanBalik saat pertama kali page dimuat
     useEffect(() => {
         fetchUmpanBalik();
     }, []);
@@ -45,7 +43,7 @@ const AdminUmpanBalikPage = () => {
                     variant="dark"
                     responsive
                     style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.7)", // Transparan putih
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
                         borderRadius: "10px",
                         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                     }}

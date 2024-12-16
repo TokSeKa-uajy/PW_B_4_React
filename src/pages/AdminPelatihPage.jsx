@@ -6,15 +6,13 @@ import { getFotoPelatih } from '../api';
 
 
 const AdminPelatihPage = () => {
-    // State untuk menyimpan daftar pelatih
     const [pelatihList, setPelatihList] = useState([]);
-    const [filteredPelatih, setFilteredPelatih] = useState([]); // State untuk daftar pelatih setelah difilter
-    const [searchQuery, setSearchQuery] = useState(""); // Query pencarian pelatih
-    const [showModal, setShowModal] = useState(false); // State untuk menampilkan modal
-    const [modalType, setModalType] = useState("add"); // Tipe modal, "add" untuk tambah, "edit" untuk edit
-    const [selectedPelatih, setSelectedPelatih] = useState(null); // Pelatih yang dipilih untuk diedit
+    const [filteredPelatih, setFilteredPelatih] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState("add");
+    const [selectedPelatih, setSelectedPelatih] = useState(null);
 
-    // State untuk form data pelatih
     const [formData, setFormData] = useState({
         nama_depan: "",
         nama_belakang: "",
@@ -22,7 +20,6 @@ const AdminPelatihPage = () => {
         foto_profil: null,
     });
     const fetchPelatihData = () => {
-        // Simulasi fetch data dummy pelatih
         GetAllPelatih().then((data) => {
             setPelatihList(data);
             setFilteredPelatih(data);
@@ -33,12 +30,10 @@ const AdminPelatihPage = () => {
         fetchPelatihData();
     }, []);
 
-    // Menampilkan modal dengan tipe (add/edit) dan data pelatih
     const handleShowModal = (type, pelatih = null) => {
         setModalType(type);
         setSelectedPelatih(pelatih);
 
-        // Jika mode edit, isi form dengan data pelatih yang dipilih
         if (type === "edit" && pelatih) {
             setFormData({
                 nama_depan: pelatih.nama_depan,
@@ -47,30 +42,25 @@ const AdminPelatihPage = () => {
                 foto_profil: pelatih.foto_profil,
             });
         } else {
-            // Reset form data jika mode tambah
             setFormData({ nama_depan: "", nama_belakang: "", jenis_kelamin: "", foto_profil: null });
         }
         setShowModal(true);
     };
 
-    // Menutup modal
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedPelatih(null);
     };
 
-    // Mengatur perubahan input pada form
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Mengatur perubahan file untuk foto profil
     const handleFileChange = (e) => {
         setFormData({ ...formData, foto_profil: e.target.files[0] });
     };
 
-    // Menyimpan data pelatih baru atau memperbarui pelatih yang sudah ada
     const handleSubmit = () => {
         const newPelatih = new FormData();
         newPelatih.append("nama_depan", formData.nama_depan);
@@ -81,14 +71,12 @@ const AdminPelatihPage = () => {
         }
         console.log(newPelatih.get("nama_depan"));
         if (modalType === "add") {
-            // Create Pake API
             createPelatih(newPelatih)
                 .then(() => {
                     fetchPelatihData();
                     handleCloseModal();
                 })
         } else if (modalType === "edit" && selectedPelatih) {
-            // Update Pake API
             updatePelatih(selectedPelatih.id_pelatih, newPelatih)
                 .then((data) => {
                     fetchPelatihData();
@@ -97,7 +85,6 @@ const AdminPelatihPage = () => {
         }
     };
 
-    // Menghapus pelatih
     const handleDelete = (id) => {
         hapusPelatih(id).then(() => {
             fetchPelatihData();
@@ -118,12 +105,10 @@ const AdminPelatihPage = () => {
             <Container>
                 <h2 className="text-center text-white mb-4">Manajemen Pelatih</h2>
 
-                {/* Tombol untuk menambah pelatih */}
                 <div className="d-flex justify-content-end">
                     <Button variant="success" onClick={() => handleShowModal("add")}>Tambah Pelatih</Button>
                 </div>
 
-                {/* Daftar pelatih yang difilter */}
                 <Row>
                     {filteredPelatih.map((pelatih) => (
                         <Col key={pelatih.id} md={4} className="mb-4 mt-4">
@@ -149,7 +134,6 @@ const AdminPelatihPage = () => {
                 </Row>
             </Container>
 
-            {/* Modal untuk tambah/edit pelatih */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalType === "add" ? "Tambah Pelatih" : "Edit Pelatih"}</Modal.Title>

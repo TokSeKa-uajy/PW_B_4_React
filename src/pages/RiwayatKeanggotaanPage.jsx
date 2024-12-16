@@ -8,11 +8,9 @@ import {GetAllPaketKeanggotaan} from '../api/apiPaketKeanggotaan';
 const RiwayatKeanggotaanPage = () => {
     const navigate = useNavigate();
 
-    // State untuk menyimpan data
     const [riwayatPembayaran, setRiwayatPembayaran] = useState([]);
     const [paketKeanggotaan, setPaketKeanggotaan] = useState([]);
 
-    // Fetch data riwayat keanggotaan dari API
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -38,7 +36,6 @@ const RiwayatKeanggotaanPage = () => {
         fetchData();
     }, []);
 
-    // Fungsi untuk mendapatkan durasi paket berdasarkan ID paket
     const getPaketById = (id) => {
         const paket = paketKeanggotaan.find(p => p.id_paket_keanggotaan === id);
         return paket ? paket.durasi : 'Tidak diketahui';

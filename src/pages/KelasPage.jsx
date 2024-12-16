@@ -7,10 +7,6 @@ import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
 import { GetAllKelas } from "../api/apiKelasAdmin";
 import { GetAllKategori } from "../api/apiKategoriAdmin";
 
-// Catatan API :
-// 1. Panggil API GetAllKelas done
-// 2. Panggil API GetAllKategori
-
 const KelasPage = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState([]);
@@ -20,10 +16,9 @@ const KelasPage = () => {
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(6); // Default to minimum of 6 items per page
+    const [itemsPerPage, setItemsPerPage] = useState(6);
 
     useEffect(() => {
-        // Panggil API GetAllKelas
         const fetchClasses = () => {
             GetAllKelas()
                 .then(
@@ -37,7 +32,7 @@ const KelasPage = () => {
                     }
                 );
         };
-        // Panggil API GetAllKategori
+
         const fetchCategories = () => {
             GetAllKategori()
                 .then(
@@ -59,7 +54,6 @@ const KelasPage = () => {
 
     }, []);
 
-    // Filtering and pagination logic
     useEffect(() => {
         let filtered = classes;
 
@@ -88,7 +82,7 @@ const KelasPage = () => {
 
     const handleItemsPerPageChange = (e) => {
         setItemsPerPage(parseInt(e.target.value));
-        setCurrentPage(1); // Reset to the first page
+        setCurrentPage(1);
     };
 
     return (

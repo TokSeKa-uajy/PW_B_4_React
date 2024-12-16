@@ -67,12 +67,11 @@ const SideNavbar = ({ routes, user }) => {
     };
 
     const goToMembership = () => {
-        navigate("/user/membership");
+        navigate("/user/Keanggotaan");
     };
 
     return (
         <>
-            {/* Hamburger Menu */}
             {!show && (
                 <Button
                     variant="light"
@@ -95,7 +94,6 @@ const SideNavbar = ({ routes, user }) => {
                 </Button>
             )}
 
-            {/* Profil Pengguna dengan Dropdown */}
             <div
                 style={{
                     position: "fixed",
@@ -121,7 +119,6 @@ const SideNavbar = ({ routes, user }) => {
                             padding: 0,
                         }}
                     >
-                        {/* Foto Profil */}
                         <Image
                             src={data.fotoProfil}
                             alt=""
@@ -134,7 +131,6 @@ const SideNavbar = ({ routes, user }) => {
                                 marginRight: "10px",
                             }}
                         />
-                        {/* Nama Pengguna */}
                         <span
                             style={{
                                 fontWeight: "bold",
@@ -161,14 +157,13 @@ const SideNavbar = ({ routes, user }) => {
                 </Dropdown>
             </div>
 
-            {/* Sidebar */}
             <Offcanvas
                 show={show}
                 onHide={toggleSidebar}
                 placement="start"
                 style={{
-                    width: "250px", // Lebar sidebar lebih kecil
-                    maxWidth: "250px", // Batas maksimal lebar
+                    width: "250px",
+                    maxWidth: "250px",
                 }}
             >
                 <Offcanvas.Header closeButton>

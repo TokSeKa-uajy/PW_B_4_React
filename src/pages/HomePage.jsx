@@ -1,36 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Carousel } from 'react-bootstrap';
 import './css/homePage.css';
 import homeVideo from '../assets/backgroundVideo/authVideo.mp4';
 
 const HomePage = () => {
-  const { id } = useParams();
-  const [classes, setClasses] = useState([]);
-  const [filteredClasses, setFilteredClasses] = useState([]);
-  const navigate = useNavigate();
-
-  const groupClasses = (classes, groupSize) => {
-    const grouped = [];
-    for (let i = 0; i < classes.length; i += groupSize) {
-      grouped.push(classes.slice(i, i + groupSize));
-    }
-    return grouped;
-  };  
-
-  useEffect(() => {
-    const dummyClasses = [
-      { id: 1, image: 'https://via.placeholder.com/150', nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga' },
-      { id: 2, image: 'https://via.placeholder.com/150', nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates' },
-      { id: 3, image: 'https://via.placeholder.com/150', nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT' },
-      { id: 4, image: 'https://via.placeholder.com/150', nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio' },
-      { id: 5, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' },
-      { id: 6, image: 'https://via.placeholder.com/150', nama_kelas: 'Strength Training', hari: 'Rabu', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength' }
-  ];
-    setClasses(dummyClasses);
-    setFilteredClasses(groupClasses(dummyClasses, 2));
-  }, []);  
+  const navigate = useNavigate();  
 
   return (
     <Container>

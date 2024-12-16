@@ -38,9 +38,7 @@ const router = createBrowserRouter([
     {
         path: "/user",
         element: (
-            // <ProtectedRoutes>
-                <UserLayout />
-            // </ProtectedRoutes>
+            <UserLayout />
         ),
         children: [
             {
@@ -61,39 +59,39 @@ const router = createBrowserRouter([
             },
             {
                 path: "/user/RiwayatKeanggotaanPage",
-                element: <RiwayatKeanggotaanPage/>
+                element: <RiwayatKeanggotaanPage />
             },
             {
                 path: "/user/Keanggotaan",
-                element: <KeanggotaanPesan/>
+                element: <KeanggotaanPesan />
             },
             {
                 path: "/user/AdminKelas",
-                element: <AdminKelasPage/>
+                element: <AdminKelasPage />
             },
             {
                 path: "/user/AdminKategori",
-                element: <KategoriPage/>
+                element: <KategoriPage />
             },
             {
                 path: "/user/KelasDetail/:id",
-                element: <KelasDetailPage/>
+                element: <KelasDetailPage />
             },
             {
                 path: "/user/AdminPelatihPage",
-                element: <AdminPelatihPage/>
+                element: <AdminPelatihPage />
             },
             {
                 path: "/user/AdminLaporanPage",
-                element: <AdminLaporanPage/>
+                element: <AdminLaporanPage />
             },
             {
                 path: "/user/AdminLaporanPage/AdminRiwayatKeanggotaan",
-                element: <AdminRiwayatKeanggotaan/>
+                element: <AdminRiwayatKeanggotaan />
             },
             {
                 path: "/user/AdminLaporanPage/AdminRiwayatKelas",
-                element: <AdminRiwayatKelas/>
+                element: <AdminRiwayatKelas />
             },
             {
                 path: "/user/AdminLaporanPage/umpan-balik",
@@ -104,9 +102,7 @@ const router = createBrowserRouter([
     {
         path: "/admin",
         element: (
-            // <ProtectedRoutes>
-                <UserLayout />
-            // </ProtectedRoutes>
+            <UserLayout />
         ),
         children: [
             {
@@ -115,11 +111,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/admin/AdminLaporanPage/AdminRiwayatKeanggotaan",
-                element: <AdminRiwayatKeanggotaan/>
+                element: <AdminRiwayatKeanggotaan />
             },
             {
                 path: "/admin/AdminLaporanPage/AdminRiwayatKelas",
-                element: <AdminRiwayatKelas/>
+                element: <AdminRiwayatKelas />
             },
             {
                 path: "/admin/umpan-balik",

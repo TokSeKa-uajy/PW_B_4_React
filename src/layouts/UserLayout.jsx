@@ -14,17 +14,17 @@ const UserLayout = ({ children }) => {
         {
             path: "/user",
             name: "Home",
-            roles: ["user", "admin"],
+            roles: ["user"],
         },
         {
             path: "/user/Kelas",
             name: "Kelas",
-            roles: ["user", "admin"],
+            roles: ["user"],
         },
         {
             path: "/user/Keanggotaan",
             name: "Keanggotaan",
-            roles: ["user", "admin"],
+            roles: ["user"],
         },
         {
             path: "/user/AdminKelas",

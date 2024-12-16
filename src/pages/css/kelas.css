@@ -12,14 +12,10 @@
 .kelas-image {
     object-fit: cover;
     width: 80px;
-    /* Skala gambar */
     height: 80px;
-    /* Ukuran gambar tetap konsisten */
 }
 
 .scrollable-dropdown {
     max-height: 200px;
-    /* Set max height of the dropdown */
     overflow-y: auto;
-    /* Enable vertical scroll if items exceed max-height */
 }

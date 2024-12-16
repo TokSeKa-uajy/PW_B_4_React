@@ -16,8 +16,6 @@ export const createRegistrasiKeanggotaan = async (data) => {
     }
 };
 
-// Fungsi untuk mengecek status keanggotaan user
-
 export const checkMembershipStatus = async () => {
     try {
         const token = sessionStorage.getItem('token');
@@ -28,11 +26,10 @@ export const checkMembershipStatus = async () => {
             },
         });
 
-        // Mengembalikan status true/false
         return response.data.status;
     } catch (error) {
         console.error("Error:", error);
-        return false; // Jika error, asumsikan status false
+        return false;
     }
 };
 

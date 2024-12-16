@@ -85,7 +85,7 @@ export const GetAllKelasUser = async () => {
             },
         });
         console.log(response.data);
-        return response.data; // Mengambil properti `data` dari respons
+        return response.data;
     } catch (error) {
         console.error('Error fetching kelas user:', error);
         throw error;

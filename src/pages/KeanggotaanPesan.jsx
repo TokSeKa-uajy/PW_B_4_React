@@ -12,20 +12,17 @@ const KeanggotaanPesan = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isMember, setIsMember] = useState(false);
     
-    // Simulasi API untuk mengecek status keanggotaan cek di tabel
     const fetchMembershipStatus = async () => {
         const status = await checkMembershipStatus();
         setIsMember(status);
     };
 
     const fetchData = () => {
-        // Simulate API response
         GetAllPaketKeanggotaan().then((data) => {
             setMembershipPackages(data);
         })
     };
 
-    // Simulasi fetch data API untuk paket keanggotaan
     useEffect(() => {
         fetchData();
         fetchMembershipStatus();
@@ -113,7 +110,6 @@ const KeanggotaanPesan = () => {
                 )}
             </Container>
 
-            {/* Modal untuk simulasi pembayaran */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Konfirmasi Pembayaran</Modal.Title>

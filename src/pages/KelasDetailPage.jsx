@@ -8,7 +8,7 @@ import { GetPaketKelasByKelasId } from '../api/apiPaketKelasAdmin';
 import { PesanKelas } from "../api/apiPemesananKelas";
 
 const KelasDetailPage = () => {
-    const { id } = useParams(); // Ambil ID kelas dari parameter URL
+    const { id } = useParams();
     const [kelasDetail, setKelasDetail] = useState(null);
     const [isBooking, setIsBooking] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -17,49 +17,7 @@ const KelasDetailPage = () => {
     const [durasiHarga, setDurasiHarga] = useState({});
     const navigate = useNavigate();
 
-    // Simulasi fetch API untuk detail kelas berdasarkan ID
     useEffect(() => {
-        // const fetchKelasDetail = async () => {
-        //     const dummyData = [
-        //         {
-        //             id: 1,
-        //             nama_kelas: "Yoga for Beginners",
-        //             hari: "Senin",
-        //             jam_mulai: "08:00",
-        //             durasi: "60 mins",
-        //             kapasitas_kelas: 20,
-        //             deskripsi: "Kelas yoga untuk pemula untuk membantu fleksibilitas dan relaksasi.",
-        //             id_pelatih: 1
-        //         },
-        //         {
-        //             id: 2,
-        //             nama_kelas: "Advanced Pilates",
-        //             hari: "Rabu",
-        //             jam_mulai: "10:00",
-        //             durasi: "90 mins",
-        //             kapasitas_kelas: 15,
-        //             deskripsi: "Kelas pilates lanjutan untuk meningkatkan kekuatan inti.",
-        //             id_pelatih: 2
-        //         },
-        //         {
-        //             id: 3,
-        //             nama_kelas: "HIIT Training",
-        //             hari: "Senin",
-        //             jam_mulai: "07:00",
-        //             durasi: "45 mins",
-        //             kapasitas_kelas: 30,
-        //             deskripsi: "Latihan intensitas tinggi untuk membakar kalori secara maksimal.",
-        //             id_pelatih: 3
-        //         },
-        //     ];
-
-        //     const kelas = dummyData.find((kelas) => kelas.id === parseInt(id));
-        //     if (kelas) {
-        //         const pelatih = trainers.find(trainer => trainer.id === kelas.id_pelatih);
-        //         setKelasDetail({ ...kelas, pelatih: pelatih ? pelatih.name : "Unknown" });
-        //     }
-        // };
-
         const fetchKelasDetail = async () => {
             try {
                 const detail = await GetKelasById(id);
@@ -71,7 +29,7 @@ const KelasDetailPage = () => {
                     if (paketKelas && paketKelas.length > 0) {
                         const hargaMap = {};
                         paketKelas.map((paket) => {
-                            console.log("Paket:", paket.durasi, paket.harga); // Debug
+                            console.log("Paket:", paket.durasi, paket.harga);
                             hargaMap[paket.durasi] = paket.harga;
                         });
                         setDurasiHarga(hargaMap);
@@ -186,7 +144,6 @@ const KelasDetailPage = () => {
                 </Row>
             </Container>
 
-            {/* Modal untuk simulasi pembayaran */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Konfirmasi Pembayaran</Modal.Title>

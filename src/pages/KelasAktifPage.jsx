@@ -24,20 +24,18 @@ const KelasPage = () => {
         komentar: "",
     });
 
-    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-    const [itemsPerPage, setItemsPerPage] = useState(6); // Number of items per page, dynamic
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(6);
 
     useEffect(() => {
-        // Panggil API GetAllKelas
         const fetchClasses = () => {
             GetAllKelasUser()
                 .then(
                     (response) => {
-                        // Ambil data dari response dan ambil kelas
-                        const pemesananData = response.data; // Ambil array data
+                        const pemesananData = response.data;
                         const kelasData = pemesananData.map((item) => ({
-                            ...item.kelas, // Ekstrak properti kelas
-                            id_pemesanan_kelas: item.id_pemesanan_kelas, // Tambahkan id_pemesanan_kelas jika diperlukan
+                            ...item.kelas,
+                            id_pemesanan_kelas: item.id_pemesanan_kelas,
                         }));
 
                         setClasses(kelasData);
@@ -48,7 +46,6 @@ const KelasPage = () => {
                     }
                 );
         };
-        // Panggil API GetAllKategori
         const fetchCategories = () => {
             GetAllKategoriUser()
                 .then(
@@ -70,7 +67,6 @@ const KelasPage = () => {
 
     }, []);
 
-    // Filtering and pagination logic
     useEffect(() => {
         let filtered = classes;
 
@@ -88,7 +84,6 @@ const KelasPage = () => {
             );
         }
 
-        // Set filtered classes ke state
         setFilteredClasses(filtered);
     }, [selectedCategory, selectedDay, searchQuery, classes]);
 
@@ -100,7 +95,7 @@ const KelasPage = () => {
 
     const handleItemsPerPageChange = (e) => {
         setItemsPerPage(parseInt(e.target.value));
-        setCurrentPage(1); // Reset to the first page
+        setCurrentPage(1);
     };
 
     useEffect(()=> {
@@ -113,17 +108,14 @@ const KelasPage = () => {
         }
     }, [selectedClass]);
 
-
-    // Fungsi untuk menampilkan modal
     const handleShowModal = (kelas) => {
-        setSelectedClass(kelas); // Simpan data kelas yang dipilih
-        setShowModal(true); // Tampilkan modal
+        setSelectedClass(kelas);
+        setShowModal(true);
     };
     
-    // Fungsi untuk menutup modal
     const handleCloseModal = () => {
-        setSelectedClass(null);  // Reset data kelas yang dipilih
-        setShowModal(false);     // Sembunyikan modal
+        setSelectedClass(null);
+        setShowModal(false);
     };
 
     const handleInputChange = (e) => {

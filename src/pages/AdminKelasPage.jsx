@@ -15,7 +15,7 @@ const AdminKelasPage = () => {
   const [selectedDay, setSelectedDay] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("add"); // "add" or "edit" or "delete"
+  const [modalType, setModalType] = useState("add");
   const [selectedKelas, setSelectedKelas] = useState(null);
   const [formData, setFormData] = useState({
     id_pelatih: "",
@@ -41,7 +41,6 @@ const AdminKelasPage = () => {
       );
   };
 
-  // Panggil API GetAllKategori
   const fetchCategories = () => {
     GetAllKategori()
       .then(
@@ -77,7 +76,6 @@ const AdminKelasPage = () => {
   }, []);
 
   const [customPrices, setCustomPrices] = useState({
-    // default
     "1_bulan": 200000,
     "6_bulan": 1000000,
     "1_tahun": 1500000,
@@ -102,7 +100,6 @@ const AdminKelasPage = () => {
 
     setFilteredClasses(filtered);
   }, [selectedCategory, selectedDay, searchQuery, kelasList]);
-
 
   const handleShowModal = (type, kelas = null) => {
     setModalType(type);
@@ -151,7 +148,6 @@ const AdminKelasPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Mengatur perubahan harga custom
   const handlePriceChange = (durasi, value) => {
     setCustomPrices(prevPrices => ({
       ...prevPrices,
@@ -160,8 +156,8 @@ const AdminKelasPage = () => {
   };
 
   const formatTime = (time) => {
-    const date = new Date(`1970-01-01T${time}Z`); // Parsing string waktu
-    return date.toISOString().slice(11, 16); // Mengambil bagian jam dan menit (H:i)
+    const date = new Date(`1970-01-01T${time}Z`);
+    return date.toISOString().slice(11, 16);
   };
 
   const handleSubmit = async () => {
@@ -169,38 +165,33 @@ const AdminKelasPage = () => {
     newKelas.append("id_pelatih", formData.id_pelatih);
     newKelas.append("id_kategori_kelas", formData.id_kategori_kelas);
     newKelas.append("nama_kelas", formData.nama_kelas);
-    newKelas.append("deskripsi", formData.deskripsi || ""); // Handle deskripsi nullable
+    newKelas.append("deskripsi", formData.deskripsi || "");
     newKelas.append("hari", formData.hari);
     newKelas.append("kapasitas_kelas", formData.kapasitas_kelas);
-    // Format waktu sebelum dikirim
+
     newKelas.append("jam_mulai", formatTime(formData.jam_mulai));
     newKelas.append("durasi", formatTime(formData.durasi));
     if (modalType === "add") {
-      // api
       CreateKelas(newKelas)
         .then((data) => {
-          // Panggil API untuk membuat data paket kelas berdasarkan id_kelas
           const paketDurasi = [
             { durasi: "1_bulan", harga: customPrices["1_bulan"] },
             { durasi: "6_bulan", harga: customPrices["6_bulan"] },
             { durasi: "1_tahun", harga: customPrices["1_tahun"] },
           ];
 
-          // Array promises untuk panggilan API
           const paketPromises = paketDurasi.map((paket) =>
             createPaketKelas({
-              id_kelas: data.id_kelas, // ID kelas dari hasil CreateKelas
+              id_kelas: data.id_kelas,
               durasi: paket.durasi,
               harga: paket.harga,
             })
           );
 
-          // Panggil API untuk membuat data paket kelas berdasarkan id_kelas
-          // Jalankan semua promise secara paralel
           Promise.all(paketPromises)
             .then(() => {
               alert("Kelas berhasil dibuat.");
-              fetchClasses(); // Refresh daftar kelas
+              fetchClasses();
             })
             .catch((err) => {
               console.error("Gagal membuat paket kelas:", err);
@@ -238,7 +229,6 @@ const AdminKelasPage = () => {
                 }
               });
 
-              // Jalankan semua update dan create secara paralel
               Promise.all(paketPromises)
                 .then(() => {
                   console.log("Paket kelas berhasil diperbarui.");
@@ -368,7 +358,6 @@ const AdminKelasPage = () => {
           ))}
         </Row>
       </Container>
-      {/* Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -459,7 +448,6 @@ const AdminKelasPage = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
-              {/* Input untuk harga custom berdasarkan durasi */}
               <Form.Group className="mb-3">
                 <Form.Label>Custom Harga untuk Durasi</Form.Label>
                 {Object.entries(customPrices).map(([durasi, harga]) => (

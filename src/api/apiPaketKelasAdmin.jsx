@@ -73,8 +73,8 @@ export const GetPaketKelasByKelasId = async (id_kelas) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return response.data.data; // Mengembalikan data paket kelas
+        return response.data.data;
     } catch (error) {
-        throw error.response; // Lempar error untuk ditangani di frontend
+        throw error.response;
     }
 };

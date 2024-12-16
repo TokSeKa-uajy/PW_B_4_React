@@ -8,15 +8,13 @@ const KategoriPage = () => {
     const [filteredCategories, setFilteredCategories] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState("add"); // "add", "edit", or "delete"
+    const [modalType, setModalType] = useState("add");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [formData, setFormData] = useState({
         nama_kategori: "",
         deskripsi_kategori: "",
     });
-    // Simualasi data kategori dari API
 
-    // Panggil API GetAllKategori
     const fetchCategories = () => {
         GetAllKategori()
             .then(
@@ -70,7 +68,6 @@ const KategoriPage = () => {
     };
 
     const handleSubmit = async () => {
-        // disini simulasi API create kategori
         const newKategori = new FormData();
         newKategori.append("nama_kategori", formData.nama_kategori);
         newKategori.append("deskripsi_kategori", formData.deskripsi_kategori);
@@ -164,7 +161,6 @@ const KategoriPage = () => {
                 </Row>
             </Container>
 
-            {/* Modal */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>
