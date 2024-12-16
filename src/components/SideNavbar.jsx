@@ -55,6 +55,7 @@ const SideNavbar = ({ routes, user }) => {
             await Logout();
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");
+            sessionStorage.removeItem("role");
             navigate("/");
         } catch (error) {
             toast.error(error || "Failed to logout. Please try again.");
@@ -62,11 +63,11 @@ const SideNavbar = ({ routes, user }) => {
     };
 
     const goToProfile = () => {
-        navigate("/user/profil"); // Pastikan rute profil sesuai dengan aplikasi Anda
+        navigate("/user/profil");
     };
 
     const goToMembership = () => {
-        navigate("/user/membership"); // Pastikan rute membership sesuai dengan aplikasi Anda
+        navigate("/user/membership");
     };
 
     return (
@@ -123,7 +124,7 @@ const SideNavbar = ({ routes, user }) => {
                         {/* Foto Profil */}
                         <Image
                             src={data.fotoProfil}
-                            alt="Profile"
+                            alt=""
                             roundedCircle
                             style={{
                                 width: "40px",

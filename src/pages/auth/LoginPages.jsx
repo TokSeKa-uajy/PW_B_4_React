@@ -29,6 +29,7 @@ const LoginPage = () => {
 
             sessionStorage.setItem("token", response.token);
             sessionStorage.setItem("user", JSON.stringify(response.user));
+            sessionStorage.setItem("role", response.user.role);
 
             if (response.user.role === "admin") {
                 navigate("/admin"); 
