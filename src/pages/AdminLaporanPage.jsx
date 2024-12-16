@@ -142,6 +142,12 @@ const AdminLaporan = () => {
                         >
                             Lihat History Transaksi Keanggotaan
                         </Button>
+                        <Button
+                            variant="danger"
+                            onClick={() => navigate("/user/AdminLaporanPage/umpan-balik")}
+                        >
+                            Lihat Umpan Balik
+                        </Button>
                     </Col>
                 </Row>
             </Container>
