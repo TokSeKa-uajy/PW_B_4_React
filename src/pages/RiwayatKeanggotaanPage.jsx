@@ -1,75 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Container, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';;
-// Simulasi API dengan data dummy
+import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
+import { getAllRegistrasiKeanggotaanByID } from '../api/apiRegistrasiKeanggotaan';
+import {GetAllPaketKeanggotaan} from '../api/apiPaketKeanggotaan';
+
 const RiwayatKeanggotaanPage = () => {
     const navigate = useNavigate();
 
-    // Data dummy untuk riwayat pembayaran
+    // State untuk menyimpan data
     const [riwayatPembayaran, setRiwayatPembayaran] = useState([]);
     const [paketKeanggotaan, setPaketKeanggotaan] = useState([]);
 
-    // Simulasi data riwayat pembayaran
-    const dataRiwayat = [
-        {
-            id_registrasi: 1,
-            id_pengguna: 101,
-            id_paket: 1, // ID Paket yang sesuai dengan paket
-            tanggal_pembayaran: '2024-10-01',
-            total_pembayaran: 100.00,
-            jenis_pembayaran: 'Kartu Kredit',
-        },
-        {
-            id_registrasi: 2,
-            id_pengguna: 102,
-            id_paket: 2,
-            tanggal_pembayaran: '2024-09-15',
-            total_pembayaran: 150.00,
-            jenis_pembayaran: 'E Wallet',
-        },
-        {
-            id_registrasi: 3,
-            id_pengguna: 103,
-            id_paket: 3,
-            tanggal_pembayaran: '2024-08-10',
-            total_pembayaran: 200.00,
-            jenis_pembayaran: 'Kartu Debit',
-        },
-    ];
-
-    // Simulasi data paket keanggotaan
-    const dataPaket = [
-        { id_paket: 1, durasi: '1_month', harga: 100.00 },
-        { id_paket: 2, durasi: '6_months', harga: 150.00 },
-        { id_paket: 3, durasi: '1_year', harga: 200.00 },
-    ];
-
-    // Menggunakan useEffect untuk mensimulasikan pemanggilan API dan mengatur state
+    // Fetch data riwayat keanggotaan dari API
     useEffect(() => {
-        // Simulasi fetch data riwayat pembayaran dan paket keanggotaan
-        setRiwayatPembayaran(dataRiwayat);
-        setPaketKeanggotaan(dataPaket);
+        const fetchData = async () => {
+            try {
+                const response = await getAllRegistrasiKeanggotaanByID();
+                console.log('Data Registrasi:', response.data);
+                setRiwayatPembayaran(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        const fetchPaket = async () => {
+            try {
+                const response = await GetAllPaketKeanggotaan();
+                setPaketKeanggotaan(response);
+                console.log("Data Paket:", response);
+            } catch (error) {
+                console.error("Error fetching data:", error.response ? error.response.data : error.message);
+            }
+        };
+
+        fetchPaket();
+        fetchData();
     }, []);
 
-    // Fungsi untuk mendapatkan nama paket berdasarkan ID paket
+    // Fungsi untuk mendapatkan durasi paket berdasarkan ID paket
     const getPaketById = (id) => {
-        const paket = paketKeanggotaan.find(p => p.id_paket === id);
+        const paket = paketKeanggotaan.find(p => p.id_paket_keanggotaan === id);
         return paket ? paket.durasi : 'Tidak diketahui';
     };
 
     return (
         <div
-            className='text-white text-center'
+            className="text-white text-center"
             style={{
                 backgroundImage: `url(${kelasBackgroundImage})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '100vh',
-                padding: '20px'
+                padding: '20px',
             }}
         >
-            <h3 className='mt-5 mb-4'>Riwayat Pembayaran Keanggotaan</h3>
+            <h3 className="mt-5 mb-4">Riwayat Pembayaran Keanggotaan Saya</h3>
             <Table
                 striped
                 bordered
@@ -77,7 +63,7 @@ const RiwayatKeanggotaanPage = () => {
                 variant="dark"
                 responsive
                 style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Transparan putih
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     borderRadius: '10px',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 }}
@@ -86,22 +72,22 @@ const RiwayatKeanggotaanPage = () => {
                     <tr>
                         <th>Tanggal Pembayaran</th>
                         <th>Total Pembayaran</th>
-                        <th>Status Pembayaran</th>
                         <th>Jenis Pembayaran</th>
+                        <th>Durasi Paket</th>
                     </tr>
                 </thead>
                 <tbody>
                     {riwayatPembayaran.map((item) => (
-                        <tr key={item.id_registrasi}>
+                        <tr key={item.id_registrasi_keanggotaan}>
                             <td>{item.tanggal_pembayaran}</td>
-                            <td>{item.total_pembayaran.toFixed(2)}</td>
+                            <td>{item.total_pembayaran}</td>
                             <td>{item.jenis_pembayaran}</td>
-                            <td>{getPaketById(item.id_paket)}</td>
+                            <td>{getPaketById(item.id_paket_keanggotaan)}</td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
-        </div >
+        </div>
     );
 };
 

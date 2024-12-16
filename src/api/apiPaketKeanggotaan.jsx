@@ -3,7 +3,7 @@ import useAxios from ".";
 export const GetAllPaketKeanggotaan = async () => {
     try {
         const token = sessionStorage.getItem('token');
-        const response = await useAxios.get("/paket-keanggotaan", {
+        const response = await useAxios.get("/paket-keanggotaan-user", {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
