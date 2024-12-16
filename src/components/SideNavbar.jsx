@@ -144,7 +144,7 @@ const SideNavbar = ({ routes, user }) => {
 
                     <Dropdown.Menu align="end">
                         <Dropdown.Item onClick={goToProfile}>
-                            Edit Profile
+                            Profile
                         </Dropdown.Item>
                         <Dropdown.Item onClick={goToMembership}>
                             Membership

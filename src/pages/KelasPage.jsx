@@ -160,7 +160,6 @@ const KelasPage = () => {
                 <h2 className="mb-4 mt-3">Kelas yang Tersedia</h2>
                 <Row>
                     {currentClasses.map((kelas) => {
-                        console.log(kelas);
                         return (
                             <Col key={kelas.id_kelas} md={6} className="mb-4">
                                 <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-dark bg-opacity-25">

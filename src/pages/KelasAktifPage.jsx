@@ -36,10 +36,12 @@ const KelasPage = () => {
                         const kelasData = pemesananData.map((item) => ({
                             ...item.kelas,
                             id_pemesanan_kelas: item.id_pemesanan_kelas,
-                        }));
+                        }));    
 
                         setClasses(kelasData);
                         setFilteredClasses(kelasData);
+                        console.log(response);
+                        console.log("kelas");
                     },
                     (error) => {
                         console.log(error);
@@ -90,7 +92,6 @@ const KelasPage = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentClasses = filteredClasses.slice(indexOfFirstItem, indexOfLastItem);
-
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleItemsPerPageChange = (e) => {
@@ -228,7 +229,7 @@ const KelasPage = () => {
                                         variant="primary"
                                         onClick={() => handleShowModal(kelas)}
                                     >
-                                        Detail
+                                        Ulas
                                     </Button>
                                 </div>
                             </Col>

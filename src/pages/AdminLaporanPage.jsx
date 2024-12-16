@@ -138,6 +138,7 @@ const AdminLaporan = () => {
                             Lihat History Transaksi Keanggotaan
                         </Button>
                         <Button
+                            className="mt-4"
                             variant="danger"
                             onClick={() => navigate("/user/AdminLaporanPage/umpan-balik")}
                         >
