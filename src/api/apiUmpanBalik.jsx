@@ -1,9 +1,9 @@
 import useAxios from ".";
 
-export const GetAllKategori = async () => {
+export const GetAllUmpanBalik = async () => {
     try {
         const token = sessionStorage.getItem('token');
-        const response = await useAxios.get("/kategori-kelas", {
+        const response = await useAxios.get("/umpan-balik", {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -16,10 +16,10 @@ export const GetAllKategori = async () => {
     }
 };
 
-export const GetAllKategoriUser = async () => {
+export const createUmpanBalik = async (data) => {    
     try {
         const token = sessionStorage.getItem('token');
-        const response = await useAxios.get("/kategori-kelas-user", {
+        const response = await useAxios.post("/umpan-balik", data, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,

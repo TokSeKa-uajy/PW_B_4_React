@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Button, Row, Col, Container, Dropdown, Form, Modal, Pagination } from 'react-bootstrap';
+import { Image, Button, Row, Col, Container, Dropdown, Form, Pagination, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import "./css/kelas.css";
 import kelasBackgroundImage from '../assets/images/kelasBackground.jpg';
 
-const KelasAktifPage = () => {
+import { GetAllKelasUser } from "../api/apiPemesananKelas";
+import { GetAllKategoriUser } from "../api/apiKategoriAdmin";
+import {createUmpanBalik} from "../api/apiUmpanBalik";
+
+const KelasPage = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState([]);
     const [filteredClasses, setFilteredClasses] = useState([]);
@@ -13,100 +16,72 @@ const KelasAktifPage = () => {
     const [categories, setCategories] = useState([]);
     const [selectedDay, setSelectedDay] = useState('Semua');
     const [searchQuery, setSearchQuery] = useState("");
-    const [trainers, setTrainers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedClass, setSelectedClass] = useState(null);
     const [feedbackForm, setFeedbackForm] = useState({
+        id_pemesanan_kelas: "",
         rating: 0,
         komentar: "",
-        tanggal_umpan_balik: new Date().toISOString().split('T')[0], // Automatically today's date
     });
 
     const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
     const [itemsPerPage, setItemsPerPage] = useState(6); // Number of items per page, dynamic
 
     useEffect(() => {
-        const fetchCategoriesAndTrainers = () => {
-            const dummyCategories = ['Semua', 'Yoga', 'Pilates', 'HIIT', 'Cardio', 'Strength'];
-            setCategories(dummyCategories);
-
-            const dummyTrainers = [
-                { id: 1, name: 'John Doe' },
-                { id: 2, name: 'Jane Smith' },
-                { id: 3, name: 'Michael Johnson' },
-                { id: 4, name: 'Emily Davis' },
-            ];
-            setTrainers(dummyTrainers);
-        };
-
-        fetchCategoriesAndTrainers();
-    }, []);
-
-    useEffect(() => {
+        // Panggil API GetAllKelas
         const fetchClasses = () => {
-            const dummyClasses = [
-                { id: 1, nama_kelas: 'Yoga for Beginners', hari: 'Senin', jam_mulai: '08:00', durasi: '60 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Yoga', tanggal_selesai: '2025-11-10' },
-                { id: 2, nama_kelas: 'Advanced Pilates', hari: 'Rabu', jam_mulai: '10:00', durasi: '90 mins', kapasitas_kelas: 15, id_pelatih: 2, category: 'Pilates', tanggal_selesai: '2024-12-01' },
-                { id: 3, nama_kelas: 'HIIT Training', hari: 'Senin', jam_mulai: '07:00', durasi: '45 mins', kapasitas_kelas: 30, id_pelatih: 3, category: 'HIIT', tanggal_selesai: '2025-10-01' },
-                { id: 4, nama_kelas: 'Cardio Workout', hari: 'Jumat', jam_mulai: '18:00', durasi: '60 mins', kapasitas_kelas: 25, id_pelatih: 4, category: 'Cardio', tanggal_selesai: '2025-09-15' },
-                { id: 5, nama_kelas: 'Strength Training', hari: 'Selasa', jam_mulai: '09:00', durasi: '75 mins', kapasitas_kelas: 20, id_pelatih: 1, category: 'Strength', tanggal_selesai: '2025-08-20' },
-            ];
+            GetAllKelasUser()
+                .then(
+                    (response) => {
+                        // Ambil data dari response dan ambil kelas
+                        const pemesananData = response.data; // Ambil array data
+                        const kelasData = pemesananData.map((item) => ({
+                            ...item.kelas, // Ekstrak properti kelas
+                            id_pemesanan_kelas: item.id_pemesanan_kelas, // Tambahkan id_pemesanan_kelas jika diperlukan
+                        }));
 
-            setClasses(dummyClasses);
-            setFilteredClasses(dummyClasses);
+                        setClasses(kelasData);
+                        setFilteredClasses(kelasData);
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+        };
+        // Panggil API GetAllKategori
+        const fetchCategories = () => {
+            GetAllKategoriUser()
+                .then(
+                    (data) => {
+                        const updatedCategories = [
+                            { id_kategori_kelas: 0, nama_kategori: "Semua", deskripsi_kategori: "Semua kategori" },
+                            ...data
+                        ];
+                        setCategories(updatedCategories);
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
         };
 
         fetchClasses();
+        fetchCategories();
+
     }, []);
 
-    const handleShowModal = (kelas) => {
-        setSelectedClass(kelas);
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedClass(null);
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFeedbackForm({ ...feedbackForm, [name]: value });
-    };
-
-    const handleSubmitFeedback = async () => {
-        const payload = {
-            id_user: 1001, // Example user ID
-            id_pemesanan_kelas: selectedClass?.id, // ID of the selected class
-            ...feedbackForm,
-        };
-
-        try {
-            // Simulate API call
-            await axios.post('/api/feedback', payload);
-            alert('Feedback berhasil disimpan!');
-            handleCloseModal();
-        } catch (error) {
-            console.error('Error submitting feedback:', error);
-            alert('Terjadi kesalahan saat menyimpan feedback.');
-        }
-    };
-
-    // Filter and pagination logic
+    // Filtering and pagination logic
     useEffect(() => {
         let filtered = classes;
 
-        // Filter berdasarkan kategori
         if (selectedCategory !== 'Semua') {
-            filtered = filtered.filter(c => c.category === selectedCategory);
+            filtered = filtered.filter(c => c.kategori.nama_kategori === selectedCategory);
         }
 
-        // Filter berdasarkan hari
         if (selectedDay !== 'Semua') {
             filtered = filtered.filter(c => c.hari === selectedDay);
         }
 
-        // Filter berdasarkan pencarian
         if (searchQuery) {
             filtered = filtered.filter(cls =>
                 cls.nama_kelas.toLowerCase().includes(searchQuery.toLowerCase())
@@ -128,6 +103,49 @@ const KelasAktifPage = () => {
         setCurrentPage(1); // Reset to the first page
     };
 
+    useEffect(()=> {
+        if (selectedClass) {
+            setFeedbackForm({
+                id_pemesanan_kelas: selectedClass.id_pemesanan_kelas,
+                rating: 0,
+                komentar: "",
+            });
+        }
+    }, [selectedClass]);
+
+
+    // Fungsi untuk menampilkan modal
+    const handleShowModal = (kelas) => {
+        setSelectedClass(kelas); // Simpan data kelas yang dipilih
+        setShowModal(true); // Tampilkan modal
+    };
+    
+    // Fungsi untuk menutup modal
+    const handleCloseModal = () => {
+        setSelectedClass(null);  // Reset data kelas yang dipilih
+        setShowModal(false);     // Sembunyikan modal
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFeedbackForm({ ...feedbackForm, [name]: value });
+    };
+    const handleSubmitFeedback = async () => {
+        const payload = new FormData();
+        payload.append("id_pemesanan_kelas", feedbackForm.id_pemesanan_kelas);
+        payload.append("rating", feedbackForm.rating);
+        payload.append("komentar", feedbackForm.komentar);
+        try {
+            createUmpanBalik(payload);
+            alert('Feedback berhasil disimpan!');
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            alert('Terjadi kesalahan saat menyimpan feedback.');
+        }
+    };
+
+
     return (
         <div style={{
             backgroundImage: `url(${kelasBackgroundImage})`,
@@ -136,7 +154,7 @@ const KelasAktifPage = () => {
             minHeight: '100vh',
             padding: '20px'
         }}>
-            <Container className="text-white ">
+            <Container className="text-white mt-5">
                 <Row className="mt-2 d-flex justify-content-end">
                     <Col xs="auto" className="me-3">
                         <Dropdown>
@@ -148,9 +166,9 @@ const KelasAktifPage = () => {
                                 {categories.map((category, index) => (
                                     <Dropdown.Item
                                         key={index}
-                                        onClick={() => setSelectedCategory(category)}
+                                        onClick={() => setSelectedCategory(category.nama_kategori)}
                                     >
-                                        {category}
+                                        {category.nama_kategori}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -203,32 +221,31 @@ const KelasAktifPage = () => {
                 <h2 className="mb-4">Kelas Saya</h2>
                 <Row>
                     {currentClasses.map((kelas) => {
-                        const trainer = trainers.find(t => t.id === kelas.id_pelatih);
                         return (
-                            <Col key={kelas.id} md={6} className="mb-4">
+                            <Col key={kelas.id_kelas} md={6} className="mb-4">
                                 <div className="d-flex align-items-center p-3 border rounded shadow-sm bg-dark bg-opacity-25">
                                     <div className="flex-grow-1 ms-4">
                                         <h5 className="mb-1">{kelas.nama_kelas}</h5>
                                         <p className="mb-1"><strong>Hari:</strong> {kelas.hari}</p>
                                         <p className="mb-1"><strong>Jam Mulai:</strong> {kelas.jam_mulai}</p>
                                         <p className="mb-1"><strong>Durasi:</strong> {kelas.durasi}</p>
-                                        <p className="mb-1"><strong>Pelatih:</strong> {trainer ? trainer.name : 'Unknown'}</p>
-                                        <p className="mb-1"><strong>Tanggal Berakhir:</strong> {kelas.tanggal_selesai}</p>
+                                        <p className="mb-1"><strong>Pelatih:</strong> {kelas.pelatih?.nama_depan} {kelas.pelatih?.nama_belakang}</p>
+                                        <p className="mb-1"><strong>Kapasitas Kelas:</strong> {kelas.kapasitas_kelas} peserta</p>
                                     </div>
                                     <Button
                                         variant="primary"
                                         onClick={() => handleShowModal(kelas)}
                                     >
-                                        Umpan Balik
+                                        Detail
                                     </Button>
                                 </div>
                             </Col>
-                        );
+                        )
                     })}
                 </Row>
 
                 <Pagination className="justify-content-center">
-                    {[...Array(Math.ceil(filteredClasses.length / itemsPerPage)).keys()].map(number => (
+                    {[...Array(Math.ceil(filteredClasses.length / itemsPerPage)).keys()].map((number) => (
                         <Pagination.Item
                             key={number + 1}
                             active={number + 1 === currentPage}
@@ -269,15 +286,6 @@ const KelasAktifPage = () => {
                                 onChange={handleInputChange}
                             />
                         </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tanggal</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={feedbackForm.tanggal_umpan_balik}
-                                disabled
-                            />
-                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -289,4 +297,4 @@ const KelasAktifPage = () => {
     );
 };
 
-export default KelasAktifPage;
+export default KelasPage;

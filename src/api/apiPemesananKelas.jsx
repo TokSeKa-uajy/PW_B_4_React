@@ -74,3 +74,20 @@ export const GetPemesananDetail = async (id) => {
         throw error.response;
     }
 };
+
+export const GetAllKelasUser = async () => {
+    try {
+        const token = sessionStorage.getItem('token');
+        const response = await useAxios.get('/pemesanan-kelas-user', {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log(response.data);
+        return response.data; // Mengambil properti `data` dari respons
+    } catch (error) {
+        console.error('Error fetching kelas user:', error);
+        throw error;
+    }
+};
