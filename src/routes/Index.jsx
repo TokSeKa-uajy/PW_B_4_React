@@ -16,6 +16,7 @@ import AdminPelatihPage from "../pages/AdminPelatihPage";
 import AdminLaporanPage from "../pages/AdminLaporanPage";
 import AdminRiwayatKeanggotaan from "../pages/AdminRiwayatKeanggotaan";
 import AdminRiwayatKelas from "../pages/AdminRiwayatKelas";
+import AdminUmpanBalikPage from "../pages/AdminUmpanBalikPage";
 import HomePage from "../pages/HomePage";
 const router = createBrowserRouter([
     {
@@ -94,6 +95,10 @@ const router = createBrowserRouter([
                 path: "/user/AdminLaporanPage/AdminRiwayatKelas",
                 element: <AdminRiwayatKelas/>
             },
+            {
+                path: "/user/AdminLaporanPage/umpan-balik",
+                element: <AdminUmpanBalikPage />
+            },
         ],
     },
     {
@@ -107,6 +112,18 @@ const router = createBrowserRouter([
             {
                 path: "/admin",
                 element: <AdminLaporanPage />
+            },
+            {
+                path: "/admin/AdminLaporanPage/AdminRiwayatKeanggotaan",
+                element: <AdminRiwayatKeanggotaan/>
+            },
+            {
+                path: "/admin/AdminLaporanPage/AdminRiwayatKelas",
+                element: <AdminRiwayatKelas/>
+            },
+            {
+                path: "/admin/umpan-balik",
+                element: <AdminUmpanBalikPage />
             },
         ],
     },
